@@ -22,15 +22,18 @@ export const content = {
       title: "Deep Research",
       description:
         "An agentic research loop that plans, gathers from tools, and synthesizes findings — model-agnostic, driven by a simple JSON action protocol.",
+      icon: "Telescope",
     },
     {
       title: "Local & private",
       description:
         "A native desktop app. Bring your own API keys; everything runs on your machine.",
+      icon: "ShieldCheck",
     },
     {
       title: "Model-agnostic",
       description: "Swap models freely. Not tied to any single provider.",
+      icon: "Shuffle",
     },
   ],
 } as const;

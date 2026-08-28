@@ -130,6 +130,38 @@
   html {
     scroll-behavior: smooth;
   }
+
+  .glow-orb-animate {
+    animation: glow-drift 12s ease-in-out infinite alternate;
+  }
+}
+
+.glow-dot-grid {
+  background-image: radial-gradient(circle, var(--foreground) 1px, transparent 1px);
+  background-size: 28px 28px;
+  opacity: calc(0.08 * var(--glow-intensity, 1));
+  mask-image: radial-gradient(ellipse 60% 60% at 50% 40%, black 0%, transparent 75%);
+  -webkit-mask-image: radial-gradient(ellipse 60% 60% at 50% 40%, black 0%, transparent 75%);
+}
+
+.glow-orb {
+  width: calc(560px * var(--glow-intensity, 1));
+  height: calc(560px * var(--glow-intensity, 1));
+  filter: blur(calc(110px * var(--glow-intensity, 1)));
+  opacity: calc(0.2 * var(--glow-intensity, 1));
+}
+
+.dark .glow-orb {
+  opacity: calc(0.3 * var(--glow-intensity, 1));
+}
+
+@keyframes glow-drift {
+  from {
+    scale: 1;
+  }
+  to {
+    scale: 1.15;
+  }
 }
 
 body {

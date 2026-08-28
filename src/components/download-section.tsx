@@ -1,6 +1,7 @@
 import { useMemo } from "react"
 
 import { Container } from "@/components/container"
+import { GlowBackground } from "@/components/glow-background"
 import { Button } from "@/components/ui/button"
 import { content } from "@/content"
 import { useLatestRelease } from "@/hooks/use-latest-release"
@@ -16,8 +17,13 @@ export function DownloadSection() {
   const showFallback = state.status === "unavailable" || (state.status === "ready" && !matchedAsset)
 
   return (
-    <section id="download" className="scroll-mt-12 border-t border-border/40 py-16">
-      <Container className="flex flex-col items-center text-center">
+    <section
+      id="download"
+      className="relative scroll-mt-12 overflow-hidden border-t border-border/40 py-20"
+    >
+      <GlowBackground intensity={0.45} animate={false} />
+
+      <Container className="relative flex flex-col items-center text-center">
         <h2 className="text-2xl font-medium tracking-tight text-foreground">Download</h2>
 
         {state.status === "loading" && (

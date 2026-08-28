@@ -1,11 +1,14 @@
 import { Container } from "@/components/container"
+import { GlowBackground } from "@/components/glow-background"
 import { Button } from "@/components/ui/button"
 import { content } from "@/content"
 
 export function HeroSection() {
   return (
-    <section id="hero" className="scroll-mt-12 py-20 sm:py-28">
-      <Container className="flex flex-col items-center text-center">
+    <section id="hero" className="relative scroll-mt-12 overflow-hidden py-20 sm:py-28">
+      <GlowBackground />
+
+      <Container className="relative flex flex-col items-center text-center">
         <h1 className="text-5xl font-semibold tracking-tighter text-foreground sm:text-7xl">
           {content.app.name}
         </h1>
