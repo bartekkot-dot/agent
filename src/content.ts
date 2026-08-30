@@ -14,7 +14,7 @@ export const content = {
     {
       src: "/screenshot-diagram.jpg",
       alt: "ChatUI generating a labelled free-body diagram of a crane, showing the full load-supporting path and force equations",
-      caption: "Model Council reasoning through a physics problem, step by step",
+      caption: "Follow its reasoning step by step — not just the final answer",
       width: 1098,
       height: 664,
     },
@@ -23,7 +23,7 @@ export const content = {
       alt: "ChatUI's Connectors settings, showing available integrations including Notion, Linear, Figma, GitHub, and Cloudflare",
       caption: "Connect it to the tools you already use",
       width: 1053,
-      height: 663,
+      height: 645,
     },
     {
       src: "/screenshot-skills.jpg",
