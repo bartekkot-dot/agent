@@ -134,6 +134,10 @@
   .glow-orb-animate {
     animation: glow-drift 12s ease-in-out infinite alternate;
   }
+
+  .dark .glow-orb-animate {
+    animation: glow-drift-dark 12s ease-in-out infinite alternate;
+  }
 }
 
 .glow-dot-grid {
@@ -158,9 +162,87 @@
 @keyframes glow-drift {
   from {
     scale: 1;
+    opacity: calc(0.2 * var(--glow-intensity, 1));
   }
   to {
     scale: 1.15;
+    opacity: calc(0.26 * var(--glow-intensity, 1));
+  }
+}
+
+@keyframes glow-drift-dark {
+  from {
+    scale: 1;
+    opacity: calc(0.3 * var(--glow-intensity, 1));
+  }
+  to {
+    scale: 1.15;
+    opacity: calc(0.38 * var(--glow-intensity, 1));
+  }
+}
+
+/* Ledger: quiet blueprint texture for the Privacy / Value / FAQ trio. */
+.ledger-grid {
+  background-image:
+    linear-gradient(to right, var(--foreground) 1px, transparent 1px),
+    linear-gradient(to bottom, var(--foreground) 1px, transparent 1px);
+  background-size: 44px 44px;
+  opacity: 0.05;
+  mask-image: linear-gradient(to bottom, transparent, black 20%, black 80%, transparent);
+  -webkit-mask-image: linear-gradient(to bottom, transparent, black 20%, black 80%, transparent);
+}
+
+.dark .ledger-grid {
+  opacity: 0.09;
+}
+
+.section-divider-mark {
+  position: relative;
+}
+
+.section-divider-mark::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 50%;
+  width: 6px;
+  height: 6px;
+  background: var(--brand);
+  transform: translate(-50%, -50%) rotate(45deg);
+}
+
+/* Model Council diagram: draws in once, then holds — a "Replay" button restarts it. */
+@media (prefers-reduced-motion: no-preference) {
+  .council-node-animate {
+    transform-box: fill-box;
+    transform-origin: center;
+    animation: council-node-in 0.5s ease-out both;
+  }
+
+  .council-line-animate {
+    animation: council-line-draw 0.6s ease-out both;
+  }
+}
+
+@keyframes council-node-in {
+  from {
+    opacity: 0;
+    scale: 0.85;
+  }
+  to {
+    opacity: 1;
+    scale: 1;
+  }
+}
+
+@keyframes council-line-draw {
+  from {
+    stroke-dashoffset: var(--dash-length, 160);
+    opacity: 0;
+  }
+  to {
+    stroke-dashoffset: 0;
+    opacity: 1;
   }
 }
 

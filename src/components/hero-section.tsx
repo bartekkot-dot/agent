@@ -2,11 +2,18 @@ import { Container } from "@/components/container"
 import { GlowBackground } from "@/components/glow-background"
 import { Button } from "@/components/ui/button"
 import { content } from "@/content"
+import { useInView } from "@/hooks/use-in-view"
 
 export function HeroSection() {
+  const { ref, inView } = useInView<HTMLElement>(0)
+
   return (
-    <section id="hero" className="relative scroll-mt-12 overflow-hidden py-20 sm:py-28">
-      <GlowBackground />
+    <section
+      id="hero"
+      ref={ref}
+      className="relative scroll-mt-12 overflow-hidden py-20 sm:py-28"
+    >
+      <GlowBackground paused={!inView} />
 
       <Container className="relative flex flex-col items-center text-center">
         <h1 className="text-5xl font-semibold tracking-tighter text-foreground sm:text-7xl">

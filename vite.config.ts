@@ -5,7 +5,9 @@ import { defineConfig } from 'vite'
 
 // https://vite.dev/config/
 export default defineConfig({
-  base: '/agents-site/',
+  // Cloudflare Pages serves from the domain root, so default base is '/'.
+  // GitHub Pages (subpath) sets VITE_BASE_PATH=/agents-site/ at build time — see .github/workflows/deploy.yml
+  base: process.env.VITE_BASE_PATH || '/',
   plugins: [react(), tailwindcss()],
   resolve: {
     alias: {
