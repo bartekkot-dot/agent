@@ -10,6 +10,13 @@ export type LatestRelease = {
   assets: ReleaseAsset[]
 }
 
+const INSTALLER_EXTENSIONS = [".dmg", ".msi", ".exe", ".appimage", ".deb"]
+
+export function isInstallerAsset(name: string): boolean {
+  const lower = name.toLowerCase()
+  return INSTALLER_EXTENSIONS.some((ext) => lower.endsWith(ext))
+}
+
 export async function fetchLatestRelease(owner: string, repo: string): Promise<LatestRelease | null> {
   try {
     const res = await fetch(`https://api.github.com/repos/${owner}/${repo}/releases/latest`)
@@ -18,7 +25,14 @@ export async function fetchLatestRelease(owner: string, repo: string): Promise<L
     const data = await res.json()
     if (!Array.isArray(data.assets) || typeof data.tag_name !== "string") return null
 
-    return { tag_name: data.tag_name, assets: data.assets }
+    const assets: ReleaseAsset[] = data.assets
+      .filter((a: { name?: unknown }) => typeof a.name === "string" && isInstallerAsset(a.name))
+      .map((a: { name: string; browser_download_url: string }) => ({
+        name: a.name,
+        browser_download_url: a.browser_download_url,
+      }))
+
+    return { tag_name: data.tag_name, assets }
   } catch {
     return null
   }
