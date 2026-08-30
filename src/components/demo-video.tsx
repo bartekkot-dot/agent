@@ -1,15 +1,13 @@
 import { useEffect, useRef, useState } from "react"
 import { Play } from "lucide-react"
 
+import { withBase } from "@/lib/url"
+
 type DemoVideoProps = {
   src: string
   poster: string
   name: string
   cta: string
-}
-
-function withBase(path: string) {
-  return `${import.meta.env.BASE_URL}${path.replace(/^\//, "")}`
 }
 
 export function DemoVideo({ src, poster, name, cta }: DemoVideoProps) {

@@ -3,6 +3,7 @@ import { FaqSection } from "@/components/faq-section"
 import { FeaturesSection } from "@/components/features-section"
 import { HeroSection } from "@/components/hero-section"
 import { PrivacySection } from "@/components/privacy-section"
+import { ShowcaseSection } from "@/components/showcase-section"
 import { SiteFooter } from "@/components/site-footer"
 import { SiteHeader } from "@/components/site-header"
 import { SkipLink } from "@/components/skip-link"
@@ -15,6 +16,7 @@ function App() {
       <SiteHeader />
       <main id="main-content" tabIndex={-1} className="flex-1 scroll-mt-12 outline-none">
         <HeroSection />
+        <ShowcaseSection />
         <FeaturesSection />
         <PrivacySection />
         <ValueSection />

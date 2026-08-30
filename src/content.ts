@@ -2,12 +2,37 @@ export const content = {
   app: {
     name: "Chat UI",
     tagline: "One prompt. Many models. One clear answer.",
+    slogan:
+      "A more private, cost-efficient, flexible, and easy-to-use AI chat & agent interface.",
     blurb: {
       lead: "A private, local-first desktop app for chatting with AI.",
       detail:
         "Send a single prompt to several models at once, then let a neutral model read every reply and synthesize one balanced answer. Your keys and your data stay on your machine.",
     },
   },
+  showcase: [
+    {
+      src: "/screenshot-diagram.jpg",
+      alt: "ChatUI generating a labelled free-body diagram of a crane, showing the full load-supporting path and force equations",
+      caption: "Model Council reasoning through a physics problem, step by step",
+      width: 1098,
+      height: 664,
+    },
+    {
+      src: "/screenshot-connectors.jpg",
+      alt: "ChatUI's Connectors settings, showing available integrations including Notion, Linear, Figma, GitHub, and Cloudflare",
+      caption: "Connect it to the tools you already use",
+      width: 1053,
+      height: 663,
+    },
+    {
+      src: "/screenshot-skills.jpg",
+      alt: "ChatUI's Skills settings, showing a library of installable skill packs for building apps, writing documents, and more",
+      caption: "Install skills that make it great at a specific task",
+      width: 1072,
+      height: 657,
+    },
+  ],
   github: {
     owner: "tomaszrymaszewski",
     repo: "ChatUI-local",
