@@ -28,7 +28,17 @@ export function DownloadSection() {
             <GlowBackground intensity={0.45} animate={false} />
 
             <div className="relative flex flex-col items-center gap-4">
-              <h2 className="font-heading text-2xl font-medium tracking-tight text-foreground">Download</h2>
+              <h2 className="font-heading max-w-sm text-2xl font-medium tracking-tight">
+                {content.download.headline.map((segment) => (
+                  <span
+                    key={segment.text}
+                    className={segment.tone === "ink" ? "text-foreground" : "text-muted-foreground"}
+                  >
+                    {segment.text}
+                  </span>
+                ))}
+              </h2>
+              <p className="text-sm text-muted-foreground">{content.download.sub}</p>
 
               {state.status === "loading" && (
                 <p className="text-sm text-muted-foreground">Checking for the latest release…</p>
@@ -67,14 +77,24 @@ export function DownloadSection() {
                 </>
               )}
 
-              <a
-                href={content.links.allReleases}
-                target="_blank"
-                rel="noreferrer"
-                className="text-sm text-brand hover:underline underline-offset-4"
-              >
-                See all releases on GitHub →
-              </a>
+              <div className="flex flex-wrap items-center justify-center gap-x-4 gap-y-1">
+                <a
+                  href={content.links.allReleases}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="text-sm text-brand hover:underline underline-offset-4"
+                >
+                  See all releases on GitHub →
+                </a>
+                <a
+                  href={content.links.source}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="text-sm text-muted-foreground hover:text-foreground hover:underline underline-offset-4"
+                >
+                  Build from source
+                </a>
+              </div>
             </div>
           </div>
         </Container>

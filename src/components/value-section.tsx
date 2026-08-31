@@ -16,24 +16,17 @@ export function ValueSection() {
 
       <Reveal>
         <Container className="relative max-w-xl text-center">
-          <p className="font-mono text-xs tracking-[0.2em] text-brand uppercase">Pricing Model</p>
-          <h2 className="font-heading mt-2 text-2xl font-medium tracking-tight text-foreground">
+          <h2 className="font-heading text-2xl font-medium tracking-tight text-foreground">
             {content.value.heading}
           </h2>
           <p className="mt-4 text-lg text-muted-foreground">{content.value.lead}</p>
         </Container>
 
         <Container className="relative max-w-3xl">
-          <dl className="mt-10 grid grid-cols-1 items-start gap-x-10 gap-y-8 md:grid-cols-2">
-            {content.value.points.map((point, index) => (
-              <div key={point.title}>
-                <span aria-hidden="true" className="block h-px w-6 bg-brand" />
-                <dt className="mt-3 flex items-baseline gap-2 text-base font-medium text-foreground">
-                  <span className="font-mono text-[11px] text-muted-foreground">
-                    {String(index + 1).padStart(2, "0")}
-                  </span>
-                  {point.title}
-                </dt>
+          <dl className="mt-10 grid grid-cols-1 divide-y divide-border md:grid-cols-2 md:divide-x">
+            {content.value.points.map((point) => (
+              <div key={point.title} className="py-6 md:px-8 md:py-8">
+                <dt className="text-base font-medium text-foreground">{point.title}</dt>
                 <dd className="mt-2 text-sm text-muted-foreground">{point.body}</dd>
               </div>
             ))}

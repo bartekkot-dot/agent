@@ -16,7 +16,7 @@ token table — don't be surprised the values change again in M1, that's expecte
 
 - [x] M1 — Amend PLAN.md + theme tokens (both modes) + typography check — `backlog/M1.md`
       depends: none
-- [ ] M2 — Static skeleton, new section order, merged content.ts — `backlog/M2.md`
+- [x] M2 — Static skeleton, new section order, merged content.ts — `backlog/M2.md`
       depends: M1
 - [ ] M3 — §3b Model Council scroll-scrub (signature moment) — `backlog/M3.md`
       depends: M2
@@ -73,3 +73,70 @@ not invisible. No mechanism change needed.
 
 `npm run build` clean both times (before and after the contrast fix). Screenshots:
 `/private/tmp/claude-501/.../scratchpad/m1-dark.png`, `m1-light.png`.
+
+### M2 — done 2026-08-31
+**Ran without stopping for the two flagged decisions** (user explicitly asked not to pause
+for confirmation between items) — applied the safest documented fallback for each and
+flagged both clearly here rather than guessing silently:
+- **ValueSection**: kept, not dropped — no explicit approval existed to delete real,
+  non-templated content. Placed between Privacy and Stats in the new order (App.tsx).
+  Applied the same §6 fix to it (removed numbering + green eyebrow) since it shares the
+  exact template Privacy was fixed for — leaving one fixed and one not would have looked
+  inconsistent now that FAQ (the third section with this pattern) is gone.
+- **Stats**: shipped only `100% / On your device` and `0 / Servers` — dropped the spec's
+  "8+ providers" and "MIT license," both marked TODO/unconfirmed by the spec itself. Do not
+  add these back without a real confirmed number/license.
+
+**Found and corrected a factual-accuracy issue the spec didn't flag**: the addendum's
+provider list for the "every model" grid (OpenAI, Anthropic, Google, Mistral, xAI,
+DeepSeek, Ollama, LM Studio) doesn't match what the app actually implements. Checked
+`ChatUI-local/src/lib/builtin-providers.ts` directly — real list is OpenAI, Anthropic
+(Claude), Google (Gemini), Fireworks, DeepInfra, Ollama, plus a Custom-endpoint option.
+Used the verified list instead (7 provider tiles + center `Chat UI` tile, content.ts
+`models.providers`). This is the same category of issue as the M1 contrast finding: the
+spec's numbers looked plausible but weren't actually checked against reality.
+
+content.ts: full merge, not overwrite. Kept `github`/`links` and the real per-OS
+release-fetch flow (`use-latest-release.ts` → `github-releases.ts`) — confirmed still
+working live in the screenshots (real v0.1.2 macOS/Windows assets rendered). Adopted the
+addendum's flatter `APP_NAME` const and `headline`/`sub` naming convention throughout
+(renamed `privacy.heading/lead` → `privacy.headline/sub` for consistency). Dropped
+`DOWNLOAD_URL`/`REPO_URL` consts entirely — redundant with `content.links.source`, and
+hero/download buttons use the real dynamic flow instead of a static href.
+
+Deleted: `showcase-section.tsx`, `integrations-strip.tsx`, `faq-section.tsx`,
+`features-section.tsx`, `model-council-diagram.tsx` (superseded by M3), `demo-video.tsx`,
+and the now-unreferenced `public/` assets (2 demo videos + posters, 3 showcase
+screenshots). Also deleted `about-section.tsx` — this was already dead code (unused
+before this item too) but its `content.app.name` reference broke `tsc` once `content.app`
+was removed, so it had to go rather than stay "untouched."
+
+Kept `deep-research-diagram.tsx` as-is (still hardcodes 4 steps
+Plan/Search/Read/Synthesize, not content-driven) — M3/M5's own prompts already say to
+reconcile it to `content.research.steps` (5 steps, "Synthesize"→"Compile" + new "Answer")
+when adding the path-draw animation, so left untouched here to avoid duplicating that work.
+
+`features-section.tsx`'s other two cards ("Local & private", "Model-agnostic") — "Local &
+private" is already fully covered by the Privacy section. "Model-agnostic / bring your own
+keys / switch freely" isn't dropped: it's now carried by `content.models.sub` ("Switch
+between them freely — or ask them all at once") in the new Models section, which is a
+closer fit for that point than Features ever was.
+
+Added: `models-section.tsx`, `council-section.tsx` (static flow: prompt → 4 model chips →
+synthesis card, using real `councilDemo` data — model IDs are still the unconfirmed
+placeholders, see below), `research-section.tsx`, `stats-section.tsx`. Extended
+`site-header.tsx` with real nav links + CTA button (previously just a wordmark + theme
+toggle). New `App.tsx` order: Hero → Models → Council → Research → Privacy → Value →
+Stats → Download → Footer.
+
+**Still unconfirmed, unchanged from BACKLOG.md's open questions**: `councilDemo`'s four
+model IDs (`claude-opus-4-8`, `gpt-5.1`, `gemini-3-pro`, `local · llama-4`) are the spec's
+own placeholders, now visible in the static Council section. M3/M4 will build real motion
+around these — confirm the real IDs before this ships publicly.
+
+`npm run build` clean. Verified in both themes via full scroll-through screenshots (not
+just top-of-page — a single full-page capture is misleading here because every section
+uses `IntersectionObserver`-triggered reveal, which never fires for content that was never
+actually scrolled into view during a single capture; scrolled step-by-step instead, which
+is what a real visitor's browser actually does). Screenshots:
+`/private/tmp/claude-501/.../scratchpad/m2-{dark,light}-{0..5}.png`.

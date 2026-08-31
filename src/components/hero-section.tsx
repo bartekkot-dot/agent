@@ -16,26 +16,26 @@ export function HeroSection() {
       <GlowBackground paused={!inView} />
 
       <Container className="relative flex flex-col items-center text-center">
-        <h1 className="font-heading text-5xl font-semibold tracking-tighter text-foreground sm:text-7xl lg:text-8xl">
-          {content.app.name}
+        <h1 className="font-heading max-w-3xl text-4xl font-semibold tracking-tighter sm:text-5xl lg:text-6xl">
+          {content.hero.headline.map((segment) => (
+            <span
+              key={segment.text}
+              className={segment.tone === "ink" ? "text-foreground" : "text-muted-foreground"}
+            >
+              {segment.text}
+            </span>
+          ))}
         </h1>
-        <p className="mt-6 max-w-md text-lg font-medium text-muted-foreground sm:text-xl">
-          {content.app.tagline}
-        </p>
-        <p className="mt-3 max-w-lg text-sm text-muted-foreground/80">
-          {content.app.slogan}
-        </p>
+        <p className="mt-6 max-w-lg text-lg text-muted-foreground">{content.hero.sub}</p>
         <div className="mt-10 flex flex-wrap items-center justify-center gap-6">
           <Button asChild className="rounded-full bg-brand px-5 text-brand-foreground hover:bg-brand/90">
-            <a href="#download">Download</a>
+            <a href={content.hero.primary.href}>{content.hero.primary.label}</a>
           </Button>
           <a
-            href={content.links.source}
-            target="_blank"
-            rel="noreferrer"
+            href={content.hero.secondary.href}
             className="text-sm text-brand hover:underline underline-offset-4"
           >
-            View on GitHub →
+            {content.hero.secondary.label} →
           </a>
         </div>
       </Container>
