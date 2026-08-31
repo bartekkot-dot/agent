@@ -18,7 +18,7 @@ token table — don't be surprised the values change again in M1, that's expecte
       depends: none
 - [x] M2 — Static skeleton, new section order, merged content.ts — `backlog/M2.md`
       depends: M1
-- [ ] M3 — §3b Model Council scroll-scrub (signature moment) — `backlog/M3.md`
+- [x] M3 — §3b Model Council scroll-scrub (signature moment) — `backlog/M3.md`
       depends: M2
 - [ ] M4 — §3a Hero scripted Council demo — `backlog/M4.md`
       depends: M2
@@ -140,3 +140,57 @@ uses `IntersectionObserver`-triggered reveal, which never fires for content that
 actually scrolled into view during a single capture; scrolled step-by-step instead, which
 is what a real visitor's browser actually does). Screenshots:
 `/private/tmp/claude-501/.../scratchpad/m2-{dark,light}-{0..5}.png`.
+
+### M3 — done 2026-08-31
+Built `src/components/council-scrub.tsx`: a `175vh` wrapper with a `sticky top-0` inner
+panel, `useScroll({target, offset:["start start","end end"]})` driving four progress-based
+stages exactly per the spec's `p` ranges (prompt → 4 lanes spread+stream → settle steady →
+converge into chair, green fading to ink). `council-section.tsx` now renders the headline/
+sub normally, then `<CouncilScrub />` (no `<Reveal>` wrapper — this section's visibility is
+driven by its own scroll math, not the page's generic reveal-on-enter). Installed
+`framer-motion` (approved earlier this session).
+
+**Important bug found and worked around — relevant for M4 and M5, which will hit the same
+thing**: continuous `useTransform`-driven opacity that needs to fade an element to `0` and
+*stay* there for an extended stretch of scroll would intermittently get stuck at a stale
+intermediate value (confirmed via a temporary debug readout: Framer's own motion-value
+reported `0.000` correctly, but `getComputedStyle` on the actual DOM node showed `~0.64` —
+the value computed correctly but didn't reliably apply to that DOM node on every update).
+Reproduced identically in both `npm run dev` and a production `vite preview` build, so it
+is **not** a React 19 StrictMode dev-only artifact — root cause not fully diagnosed, but
+consistently reproducible enough to design around. Also caught and fixed **before** it hit
+screenshots: the `laneOpacity`/`x` motion values I computed were correct but had never
+actually been wired into `LaneCard`'s `style` prop in the first draft — worth double
+checking that every declared motion value is actually consumed somewhere, not just
+declared, since a forgotten hookup fails silently (no error, element just doesn't animate).
+
+**Workaround (use this pattern in M4/M5 too):** for any element whose *existence* — not
+just its final resting opacity — matters (does it show or not), gate it with a discrete
+`phase`/boolean React state (updated via `useMotionValueEvent`) and conditionally mount/
+unmount it (`{condition && <motion.div>...}`), rather than trusting a long-running
+continuous opacity transform to reach and hold `0`. Reserve continuous `useTransform`
+values for animations *within* an already-mounted element's lifetime (position, per-line
+reveal, scale) — those never exhibited the bug. This is why `council-scrub.tsx` computes a
+`phase: "idle"|"active"|"settled"|"chair"` state and a `captionIndex`/`chairInk` boolean
+instead of the more "idiomatic" all-continuous-motion-values approach the spec's prose
+suggests — it trades a little crossfade smoothness for guaranteed correctness. Also note:
+Framer's pinned-scrub progress reaches `1` at scroll distance `(wrapperHeight -
+viewportHeight)`, **not** `wrapperHeight` — got this wrong in my own test script at first
+and it produced very confusing false-bug symptoms before I caught it.
+
+Also caught mid-build: the prompt bubble and the lane cards initially shared the same
+vertical slot (both absolutely centered in one container), so the mid-transition frames
+showed overlapping text. Fixed by giving the prompt its own row above the lane/chair
+"stage" — no shared space, no possible overlap regardless of timing.
+
+Verified: `npm run build` clean; both themes; scrolled through at p≈0.05/0.3/0.6/0.9/0.98
+via Playwright (screenshots in
+`/private/tmp/claude-501/.../scratchpad/m3f-dark-*.png`, `m3g-light-*.png`); reduced-motion
+via `page.emulateMedia({reducedMotion:'reduce'})` renders the full static composition
+(prompt, four faded lanes, synthesis card, all three captions as plain stacked text)
+immediately with zero animation, as the spec requires
+(`m3-reduced-reduced.png`). No console errors in any run.
+
+**Still unconfirmed** (per BACKLOG.md's open questions, unchanged by this item): the four
+`councilDemo` model IDs are the spec's own placeholders — now visible and *moving* in this
+scrub, which makes confirming them before ship more important, not less.
