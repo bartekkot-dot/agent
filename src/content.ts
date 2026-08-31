@@ -120,6 +120,11 @@ export const content = {
       "Every model answers at once.",
       "One neutral answer, synthesized.",
     ],
+    demo: {
+      src: "model-council-demo.mp4",
+      poster: "model-council-poster.jpg",
+      alt: "Screen recording of Model Council running in the app: one prompt, several models answering in parallel, then a synthesized answer.",
+    },
   },
 
   // ── Deep Research (§4b: path-draw, built in M5) ─────────────────────────
@@ -140,6 +145,11 @@ export const content = {
       "Runs on any connected model",
     ],
     steps: ["Plan", "Search", "Read", "Compile", "Answer"],
+    demo: {
+      src: "deep-research-demo.mp4",
+      poster: "deep-research-poster.jpg",
+      alt: "Screen recording of Deep Research running in the app: planning, searching, reading sources, and compiling a sourced answer.",
+    },
   },
 
   // ── Private by design (§6: no numbering, no eyebrow, both themes) ───────

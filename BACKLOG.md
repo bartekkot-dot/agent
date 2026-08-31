@@ -26,6 +26,9 @@ token table — don't be surprised the values change again in M1, that's expecte
       depends: M2
 - [x] M6 — Reduced-motion / both-theme / mobile / build final pass — `backlog/M6.md`
       depends: M3, M4, M5
+- [x] M7 — Post-ship fix: Council end-state was empty, scrub too fast, restore videos
+      depends: M6 (user-reported fix, not part of the original addendum — no prompt file,
+      logged here directly)
 
 M3, M4, M5 each only depend on M2 (the static skeleton), not on each other — they touch
 different sections (Council / Hero / Provider-grid+Research) and can run in any order
@@ -357,3 +360,60 @@ browser's native focus outline but tints it to match the design system). Decorat
 reconciliation recorded above under "Full arc summary." This closes the backlog except for
 the one item that needs the user, not more engineering: confirming the real model IDs
 before public ship.
+
+### M7 — done 2026-08-31 (post-ship user report)
+User reported, with a screenshot, that scrolling to the end of the Council section showed
+**only the caption** — no synthesis card, no lanes. Root-caused via direct instrumentation
+rather than guessing: a temporary debug readout (`useTransform` combining `p`,
+`chairOpacity`, `laneOpacity` into visible text) proved the chair's own opacity math was
+correct once mounted, but the **caption's threshold (`captionIndexFor`, flips at p=0.71)
+and the chair's opacity ramp (`chairOpacity`, doesn't start until p=0.72 and doesn't finish
+until 0.86) were on independent, misaligned timelines** — real momentum-scroll or a page
+that runs out of scrollable room could easily land a user in that 0.70–0.86 gap, where the
+caption already says "synthesized" but the chair is still transparent. Confirmed this
+mechanism, not a Framer bug, by testing single-jump vs. sequential-jump scroll patterns.
+
+Fixed by: **redesigning around one rule — caption and visual now share the exact same
+phase boundaries** (`phaseFor`/`captionIndexFor` both flip at 0.12/0.85), so there is no
+window where one has moved on and the other hasn't. Additionally, per the fix spec, lanes
+and the chair card are now **both permanently mounted** (no more conditional mount/unmount
+introduced in M3) — lanes settle to a faint `0.2` opacity behind the chair instead of
+disappearing, so there's no mount-boundary instant to get caught in even in principle.
+
+Also per the fix spec: pin lengthened 175vh → **300vh**; `scrollYProgress` now wrapped in
+`useSpring(stiffness: 80, damping: 26, restDelta: 0.001)` and every transform reads the
+spring (`p`), not the raw scroll value, so scrubbing glides; phases re-timed to the spec's
+exact ranges (0/0.12/0.35/0.65/0.85/1.0) with streaming (0.35–0.65) as the widest window;
+`easeInOut` (imported from `framer-motion`, not the string `"easeInOut"` — that fails
+TypeScript's `EasingFunction` type) applied to every positional/opacity transform; the
+synthesis card now renders `councilDemo.synthesis.lines` in full, not just the first line.
+
+**Verification note for future sessions**: testing this required distinguishing three
+different scroll-timing effects that all look similar from a screenshot alone — (1) native
+CSS `scroll-behavior: smooth` intercepting programmatic `scrollTo` (fixed by passing
+`{behavior: "instant"}`), (2) the new spring's own settling time after a scroll change
+(needs ~1–2s of wait after even an instant scroll, confirmed via a temporary live debug
+readout of the spring's value), and (3) a synthetic-test-only artifact where several large
+instant jumps in immediate sequence within one Playwright session leave the spring
+lagging in a way a real gradual human scroll does not (confirmed via a 60-step gradual-
+scroll simulation with only one sub-perceptual transitional frame, vs. the reported bug
+which was a sustained, noticeable empty state). Don't assume screenshot A ≠ screenshot B
+means "still broken" without checking which of these three is actually in play.
+
+**Fix 3 — videos restored**, not reinvented: recovered the actual deleted assets
+(`public/model-council-demo.mp4`, `model-council-poster.jpg`, `deep-research-demo.mp4`,
+`deep-research-poster.jpg`) via `git checkout 330194c^ -- <paths>` (the M2 commit that
+deleted them) rather than sourcing new ones. Built a new `product-video.tsx` (the old
+`demo-video.tsx` was click-to-play; the fix spec wants autoplay/muted/loop) —
+lazy-mounted via `useInView` so it never loads until scrolled near, and renders only the
+`<img poster>` (no `<video>` element at all) under reduced motion rather than an
+autoplaying-then-paused video, per the spec. Placed in both `council-section.tsx` (above
+the scrub) and `research-section.tsx` (above the bullets/diagram row) as "proof," with the
+existing scrub/diagram kept as the "explainer" — confirmed via the video-vs-scrub roles
+rule that these aren't redundant (one is real footage, one is a stylized diagram) so
+neither needed to be cut. Verified zero failed `.mp4`/`.jpg` requests and correct
+`autoplay`/`muted`/`loop` attributes via direct `page.evaluate` inspection, not just visual
+inspection, in both reduced-motion states.
+
+`npm run build` clean; no horizontal overflow on mobile with the added video blocks;
+no console/page errors in any test.

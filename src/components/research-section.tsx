@@ -1,5 +1,6 @@
 import { Container } from "@/components/container"
 import { DeepResearchDiagram } from "@/components/deep-research-diagram"
+import { ProductVideo } from "@/components/product-video"
 import { Reveal } from "@/components/reveal"
 import { content } from "@/content"
 
@@ -8,7 +9,15 @@ export function ResearchSection() {
     <section id={content.research.id} className="scroll-mt-12 border-t border-border/40 py-20 sm:py-24">
       <Container>
         <Reveal>
-          <div className="grid gap-10 sm:grid-cols-2 sm:items-center sm:gap-16">
+          <div className="mx-auto max-w-2xl">
+            <ProductVideo
+              src={content.research.demo.src}
+              poster={content.research.demo.poster}
+              alt={content.research.demo.alt}
+            />
+          </div>
+
+          <div className="mt-10 grid gap-10 sm:grid-cols-2 sm:items-center sm:gap-16">
             <div>
               <h2 className="font-heading text-2xl font-medium tracking-tight">
                 {content.research.headline.map((segment) => (

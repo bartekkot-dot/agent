@@ -1,5 +1,13 @@
 import { useEffect, useRef, useState } from "react"
-import { motion, useMotionValueEvent, useScroll, useTransform, type MotionValue } from "framer-motion"
+import {
+  easeInOut,
+  motion,
+  useMotionValueEvent,
+  useScroll,
+  useSpring,
+  useTransform,
+  type MotionValue,
+} from "framer-motion"
 
 import { content } from "@/content"
 import { cn } from "@/lib/utils"
@@ -15,7 +23,9 @@ const MOBILE_LANE_X = [0, 0, 0, 0]
 // the 3-line models) plus margin — measured via actual getBoundingClientRect, not guessed.
 const MOBILE_LANE_Y = [-210, -70, 70, 210]
 
-type Phase = "idle" | "active" | "settled" | "chair"
+type Phase = "idle" | "fanning" | "streaming" | "settled" | "chair"
+
+const EASE = easeInOut
 
 function useIsMobile() {
   const [isMobile, setIsMobile] = useState(
@@ -60,7 +70,7 @@ function LaneCard({
   lineOpacities: MotionValue<number>[]
   isMobile: boolean
 }) {
-  const isLive = phase === "active"
+  const isLive = phase === "streaming"
   const isDone = phase === "settled" || phase === "chair"
 
   return (
@@ -92,64 +102,80 @@ function LaneCard({
   )
 }
 
+// Re-timed per the fix spec: streaming (the actual "several models answering at once"
+// moment) gets the widest window and is where scrubbing should feel like it's worth
+// lingering — everything else is comparatively brief.
 function phaseFor(p: number): Phase {
-  if (p < 0.15) return "idle"
-  if (p < 0.45) return "active"
-  if (p < 0.7) return "settled"
+  if (p < 0.12) return "idle"
+  if (p < 0.35) return "fanning"
+  if (p < 0.65) return "streaming"
+  if (p < 0.85) return "settled"
   return "chair"
 }
 
 function captionIndexFor(p: number): 0 | 1 | 2 {
-  if (p < 0.15) return 0
-  if (p < 0.71) return 1
+  if (p < 0.12) return 0
+  if (p < 0.85) return 1
   return 2
 }
 
 function AnimatedScrub() {
   const wrapperRef = useRef<HTMLDivElement>(null)
   const { scrollYProgress } = useScroll({ target: wrapperRef, offset: ["start start", "end end"] })
+  // Spring-smoothed so the scrub glides instead of tracking raw (jittery) scroll deltas
+  // 1:1. Every transform below is driven off this `p`, never off scrollYProgress directly.
+  const p = useSpring(scrollYProgress, { stiffness: 80, damping: 26, restDelta: 0.001 })
+
   const isMobile = useIsMobile()
   const laneXTarget = isMobile ? MOBILE_LANE_X : DESKTOP_LANE_X
   const laneYTarget = isMobile ? MOBILE_LANE_Y : DESKTOP_LANE_Y
-  const [phase, setPhase] = useState<Phase>(() => phaseFor(scrollYProgress.get()))
-  const [chairInk, setChairInk] = useState(() => scrollYProgress.get() > 0.95)
-  const [captionIndex, setCaptionIndex] = useState(() => captionIndexFor(scrollYProgress.get()))
+  const [phase, setPhase] = useState<Phase>(() => phaseFor(p.get()))
+  const [chairInk, setChairInk] = useState(() => p.get() > 0.97)
+  const [captionIndex, setCaptionIndex] = useState(() => captionIndexFor(p.get()))
 
-  useMotionValueEvent(scrollYProgress, "change", (p) => {
-    setPhase(phaseFor(p))
-    setChairInk(p > 0.95)
-    setCaptionIndex(captionIndexFor(p))
+  useMotionValueEvent(p, "change", (value) => {
+    setPhase(phaseFor(value))
+    setChairInk(value > 0.97)
+    setCaptionIndex(captionIndexFor(value))
   })
 
-  // Prompt lives in its own slot and is fully gone before the lane/chair stage
-  // below it ever becomes visible — no shared vertical space, no text overlap.
-  const promptOpacity = useTransform(scrollYProgress, [0, 0.1, 0.16], [1, 1, 0])
+  // Prompt lives in its own slot, fully gone before the lane/chair stage below it ever
+  // becomes visible — no shared vertical space, no text overlap.
+  const promptOpacity = useTransform(p, [0, 0.08, 0.12], [1, 1, 0], { ease: EASE })
 
-  // Fully faded/converged by 0.7 (the active/settled -> chair phase boundary), so the
-  // conditional unmount at that boundary never clips a still-visible element.
-  const laneOpacity = useTransform(scrollYProgress, [0.14, 0.22, 0.6, 0.7], [0, 1, 1, 0])
-  const lane0X = useTransform(scrollYProgress, [0.15, 0.45, 0.6, 0.7], [0, laneXTarget[0], laneXTarget[0], 0])
-  const lane1X = useTransform(scrollYProgress, [0.15, 0.45, 0.6, 0.7], [0, laneXTarget[1], laneXTarget[1], 0])
-  const lane2X = useTransform(scrollYProgress, [0.15, 0.45, 0.6, 0.7], [0, laneXTarget[2], laneXTarget[2], 0])
-  const lane3X = useTransform(scrollYProgress, [0.15, 0.45, 0.6, 0.7], [0, laneXTarget[3], laneXTarget[3], 0])
+  // Lanes are ALWAYS mounted (never conditionally removed) once past idle — the fix spec
+  // requires them to stay faintly visible behind the synthesis card at the end, not
+  // disappear, and a real visual must be on screen at every scroll position including
+  // during any mount/unmount boundary. Opacity dips to 0.2 (not 0) by the end; position
+  // eases most of the way back toward center but doesn't fully overlap the chair card.
+  const laneOpacity = useTransform(p, [0.06, 0.2, 0.85, 0.97], [0, 1, 1, 0.2], { ease: EASE })
+  const lane0X = useTransform(p, [0.12, 0.35, 0.85, 1], [0, laneXTarget[0], laneXTarget[0], laneXTarget[0] * 0.25], { ease: EASE })
+  const lane1X = useTransform(p, [0.12, 0.35, 0.85, 1], [0, laneXTarget[1], laneXTarget[1], laneXTarget[1] * 0.25], { ease: EASE })
+  const lane2X = useTransform(p, [0.12, 0.35, 0.85, 1], [0, laneXTarget[2], laneXTarget[2], laneXTarget[2] * 0.25], { ease: EASE })
+  const lane3X = useTransform(p, [0.12, 0.35, 0.85, 1], [0, laneXTarget[3], laneXTarget[3], laneXTarget[3] * 0.25], { ease: EASE })
   const laneX = [lane0X, lane1X, lane2X, lane3X]
 
-  const lane0Y = useTransform(scrollYProgress, [0.15, 0.45, 0.6, 0.7], [0, laneYTarget[0], laneYTarget[0], 0])
-  const lane1Y = useTransform(scrollYProgress, [0.15, 0.45, 0.6, 0.7], [0, laneYTarget[1], laneYTarget[1], 0])
-  const lane2Y = useTransform(scrollYProgress, [0.15, 0.45, 0.6, 0.7], [0, laneYTarget[2], laneYTarget[2], 0])
-  const lane3Y = useTransform(scrollYProgress, [0.15, 0.45, 0.6, 0.7], [0, laneYTarget[3], laneYTarget[3], 0])
+  const lane0Y = useTransform(p, [0.12, 0.35, 0.85, 1], [0, laneYTarget[0], laneYTarget[0], laneYTarget[0] * 0.25], { ease: EASE })
+  const lane1Y = useTransform(p, [0.12, 0.35, 0.85, 1], [0, laneYTarget[1], laneYTarget[1], laneYTarget[1] * 0.25], { ease: EASE })
+  const lane2Y = useTransform(p, [0.12, 0.35, 0.85, 1], [0, laneYTarget[2], laneYTarget[2], laneYTarget[2] * 0.25], { ease: EASE })
+  const lane3Y = useTransform(p, [0.12, 0.35, 0.85, 1], [0, laneYTarget[3], laneYTarget[3], laneYTarget[3] * 0.25], { ease: EASE })
   const laneY = [lane0Y, lane1Y, lane2Y, lane3Y]
 
-  const line1Opacity = useTransform(scrollYProgress, [0.17, 0.23], [0, 1])
-  const line2Opacity = useTransform(scrollYProgress, [0.23, 0.29], [0, 1])
-  const line3Opacity = useTransform(scrollYProgress, [0.29, 0.35], [0, 1])
+  // Streaming window is 0.35-0.65 (0.30 wide, on a 3x-taller pin than before — a lot of
+  // physical scroll distance per line now) so tokens reveal gradually, not in a snap.
+  const line1Opacity = useTransform(p, [0.38, 0.47], [0, 1], { ease: EASE })
+  const line2Opacity = useTransform(p, [0.47, 0.56], [0, 1], { ease: EASE })
+  const line3Opacity = useTransform(p, [0.56, 0.65], [0, 1], { ease: EASE })
   const lineOpacities = [line1Opacity, line2Opacity, line3Opacity]
 
-  const chairOpacity = useTransform(scrollYProgress, [0.72, 0.86], [0, 1])
-  const chairScale = useTransform(scrollYProgress, [0.72, 0.86], [0.92, 1])
+  // Also always mounted — opacity is 0 (invisible, not absent) until 0.85, then ramps to
+  // fully opaque *well* before p reaches 1 (by 0.97) so there's a comfortable held plateau
+  // at the true end rather than resolving exactly at the boundary.
+  const chairOpacity = useTransform(p, [0.85, 0.97], [0, 1], { ease: EASE })
+  const chairScale = useTransform(p, [0.85, 0.97], [0.92, 1], { ease: EASE })
 
   return (
-    <div ref={wrapperRef} data-council-wrapper className="relative" style={{ height: "175vh" }}>
+    <div ref={wrapperRef} data-council-wrapper className="relative" style={{ height: "300vh" }}>
       <div className="sticky top-0 flex h-screen flex-col items-center justify-center overflow-hidden">
         <div className="relative flex h-[80px] w-full items-center justify-center px-6">
           {phase === "idle" && (
@@ -168,7 +194,7 @@ function AnimatedScrub() {
             isMobile ? "h-[540px]" : "h-[220px]"
           )}
         >
-          {(phase === "active" || phase === "settled") &&
+          {phase !== "idle" &&
             content.councilDemo.models.map((model, i) => (
               <LaneCard
                 key={model.id}
@@ -182,14 +208,16 @@ function AnimatedScrub() {
               />
             ))}
 
-          {phase === "chair" && (
+          {phase !== "idle" && (
             <motion.div
               style={{ opacity: chairOpacity, scale: chairScale }}
-              className="absolute w-[85vw] max-w-[300px] rounded-lg border border-brand/50 bg-brand/[0.06] px-4 py-4 text-left"
+              className="absolute w-[85vw] max-w-[360px] rounded-lg border border-brand/50 bg-brand/[0.06] px-4 py-4 text-left"
             >
-              <p className={cn("text-sm", chairInk ? "text-foreground" : "text-brand")}>
-                {content.councilDemo.synthesis.lines[0]}
-              </p>
+              <div className={cn("space-y-1 text-sm", chairInk ? "text-foreground" : "text-brand")}>
+                {content.councilDemo.synthesis.lines.map((line) => (
+                  <p key={line}>{line}</p>
+                ))}
+              </div>
             </motion.div>
           )}
         </div>
@@ -209,7 +237,7 @@ function StaticEndState() {
         {content.councilDemo.prompt}
       </div>
       <div className="relative flex w-full max-w-2xl items-center justify-center">
-        <div className="grid grid-cols-2 gap-3 opacity-40 sm:grid-cols-4">
+        <div className="grid grid-cols-2 gap-3 opacity-30 sm:grid-cols-4">
           {content.councilDemo.models.map((model) => (
             <div key={model.id} className="w-[160px] rounded-lg border border-border/60 px-3 py-3 text-left">
               <p className="font-mono text-[10px] text-muted-foreground">{model.id}</p>
@@ -217,8 +245,10 @@ function StaticEndState() {
           ))}
         </div>
       </div>
-      <div className="w-full max-w-sm rounded-lg border border-brand/50 bg-brand/[0.06] px-4 py-4 text-left">
-        <p className="text-sm text-foreground">{content.councilDemo.synthesis.lines[0]}</p>
+      <div className="w-full max-w-md space-y-1 rounded-lg border border-brand/50 bg-brand/[0.06] px-4 py-4 text-left text-sm text-foreground">
+        {content.councilDemo.synthesis.lines.map((line) => (
+          <p key={line}>{line}</p>
+        ))}
       </div>
       <ul className="flex flex-wrap items-center justify-center gap-x-8 gap-y-2 text-sm text-muted-foreground">
         {content.council.captions.map((caption) => (
