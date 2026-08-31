@@ -28,7 +28,7 @@ export function DownloadSection() {
             <GlowBackground intensity={0.45} animate={false} />
 
             <div className="relative flex flex-col items-center gap-4">
-              <h2 className="text-2xl font-medium tracking-tight text-foreground">Download</h2>
+              <h2 className="font-heading text-2xl font-medium tracking-tight text-foreground">Download</h2>
 
               {state.status === "loading" && (
                 <p className="text-sm text-muted-foreground">Checking for the latest release…</p>

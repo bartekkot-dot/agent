@@ -21,7 +21,7 @@ export function FeaturesSection() {
         <Reveal>
           <div className="mx-auto max-w-xl text-center">
             <p className="font-mono text-xs tracking-[0.2em] text-brand uppercase">Features</p>
-            <h2 className="mt-2 text-2xl font-medium tracking-tight text-foreground">What it does</h2>
+            <h2 className="font-heading mt-2 text-2xl font-medium tracking-tight text-foreground">What it does</h2>
           </div>
           <div className="mt-10 grid gap-10 sm:grid-cols-2 sm:gap-x-10 sm:gap-y-12">
             {content.features.map((feature) => {

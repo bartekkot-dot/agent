@@ -17,7 +17,7 @@ export function PrivacySection() {
       <Reveal>
         <Container className="relative max-w-xl text-center">
           <p className="font-mono text-xs tracking-[0.2em] text-brand uppercase">Privacy</p>
-          <h2 className="mt-2 text-2xl font-medium tracking-tight text-foreground">
+          <h2 className="font-heading mt-2 text-2xl font-medium tracking-tight text-foreground">
             {content.privacy.heading}
           </h2>
           <p className="mt-4 text-lg text-muted-foreground">{content.privacy.lead}</p>

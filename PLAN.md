@@ -1,7 +1,7 @@
 # PLAN.md — Landing Page
 
 A single-page marketing/download site for the desktop app (the local-first
-multi-model chat client), deployed on Vercel.
+multi-model chat client), deployed on Cloudflare Pages.
 
 This file is the governing reference. Every prompt executes against it and
 references the constraints below by number instead of restating them.
@@ -46,6 +46,13 @@ page content. No later stage may remove, replace, or relocate either video unles
 an instruction explicitly names the video and says to change it. All later
 visual/motion work is ADDITIVE around them.
 
+> **Superseded, not violated — 2026-08-31.** `MOTION-SPEC.md` (a follow-up brief,
+> explicitly approved by the user) retires both demo videos in favor of scripted/animated
+> visuals: a hero Council demo (§3a), a scroll-scrubbed Council explainer (§3b), and a
+> Deep Research path-draw (§4b). This is a deliberate, explicitly-instructed reversal of
+> this constraint, not a stage quietly ignoring it — later stages implementing
+> `MOTION-SPEC.md` should not be flagged against this line.
+
 **G7 — Motion & delight.** The site may use motion and one interactive moment to
 feel crafted and alive, but it stays subservient to G2: calm, premium, restrained
 — never flashy or attention-grabbing for its own sake. Every animation MUST
@@ -83,7 +90,7 @@ video is a one-file change here.
 
 **Stage 1 — content.ts.** Create the object above with seeded copy.
 
-**Stage 2 — Scaffold + Vercel.** Vite + React 19 + TS + Tailwind v4 + shadcn/ui.
+**Stage 2 — Scaffold + Cloudflare Pages.** Vite + React 19 + TS + Tailwind v4 + shadcn/ui.
 Prefer zero-config Vite deploy (`dist/`, `npm run build`). Confirm dev + build.
 
 **Stage 3 — Layout shell + design tokens.** Section flow above; theming per G4;
@@ -124,7 +131,9 @@ via the Canva skill (monochrome + accent, placeholder wordmark). Responsive pass
 (~380px / tablet / desktop). Accessibility: landmarks, focus states, alt text,
 contrast in both themes. No fabricated screenshots (G6).
 
-**Stage 11 — Deploy.** Push to GitHub, import into Vercel (preset = Vite), deploy.
+**Stage 11 — Deploy.** Push to GitHub, connect the repo in Cloudflare Pages (build command
+`npm run build`, output `dist`), deploy. A GitHub Pages fallback also exists via
+`.github/workflows/deploy.yml`, which sets `VITE_BASE_PATH=/agents-site/` at build time.
 Verify light + dark readable, download resolves to a real asset or the fallback,
 both videos play, motion respects reduced-motion.
 
@@ -138,4 +147,4 @@ both videos play, motion respects reduced-motion.
   working fallback.
 - Both demo videos present under their features and playing (G6 extension).
 - Motion is calm and respects prefers-reduced-motion (G7).
-- Clean `npm run build`, deployed on Vercel, aesthetic matches G2.
+- Clean `npm run build`, deployed on Cloudflare Pages, aesthetic matches G2.
