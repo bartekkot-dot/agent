@@ -4,8 +4,31 @@ import { motion, useMotionValueEvent, useScroll, useTransform, type MotionValue 
 import { content } from "@/content"
 import { cn } from "@/lib/utils"
 
-const LANE_X = [-330, -110, 110, 330]
+// Desktop: four lanes spread horizontally. Below 640px there isn't room for that (four
+// 210px-wide cards spread to ±330px overflows a 380px viewport) — fall back to a single
+// vertical stack instead of a 2x2 grid, since card height varies with each model's line
+// count and a grid's fixed row height either clips or overlaps depending on content.
+const DESKTOP_LANE_X = [-330, -110, 110, 330]
+const DESKTOP_LANE_Y = [0, 0, 0, 0]
+const MOBILE_LANE_X = [0, 0, 0, 0]
+// Gap between adjacent centers (140px) comfortably clears the tallest card (~132px,
+// the 3-line models) plus margin — measured via actual getBoundingClientRect, not guessed.
+const MOBILE_LANE_Y = [-210, -70, 70, 210]
+
 type Phase = "idle" | "active" | "settled" | "chair"
+
+function useIsMobile() {
+  const [isMobile, setIsMobile] = useState(
+    () => typeof window !== "undefined" && window.matchMedia("(max-width: 639px)").matches
+  )
+  useEffect(() => {
+    const query = window.matchMedia("(max-width: 639px)")
+    const onChange = (event: MediaQueryListEvent) => setIsMobile(event.matches)
+    query.addEventListener("change", onChange)
+    return () => query.removeEventListener("change", onChange)
+  }, [])
+  return isMobile
+}
 
 function useReducedMotion() {
   const [reduced, setReduced] = useState(
@@ -23,24 +46,29 @@ function useReducedMotion() {
 function LaneCard({
   model,
   x,
+  y,
   opacity,
   phase,
   lineOpacities,
+  isMobile,
 }: {
   model: (typeof content.councilDemo.models)[number]
   x: MotionValue<number>
+  y: MotionValue<number>
   opacity: MotionValue<number>
   phase: Phase
   lineOpacities: MotionValue<number>[]
+  isMobile: boolean
 }) {
   const isLive = phase === "active"
   const isDone = phase === "settled" || phase === "chair"
 
   return (
     <motion.div
-      style={{ x, opacity }}
+      style={{ x, y, opacity }}
       className={cn(
-        "absolute w-[210px] rounded-lg border px-3 py-3 text-left transition-colors duration-300",
+        "absolute rounded-lg border px-3 py-3 text-left transition-colors duration-300",
+        isMobile ? "w-[85vw] max-w-[280px]" : "w-[210px]",
         isLive && "border-brand animate-pulse",
         isDone && "border-brand",
         !isLive && !isDone && "border-border/60"
@@ -80,6 +108,9 @@ function captionIndexFor(p: number): 0 | 1 | 2 {
 function AnimatedScrub() {
   const wrapperRef = useRef<HTMLDivElement>(null)
   const { scrollYProgress } = useScroll({ target: wrapperRef, offset: ["start start", "end end"] })
+  const isMobile = useIsMobile()
+  const laneXTarget = isMobile ? MOBILE_LANE_X : DESKTOP_LANE_X
+  const laneYTarget = isMobile ? MOBILE_LANE_Y : DESKTOP_LANE_Y
   const [phase, setPhase] = useState<Phase>(() => phaseFor(scrollYProgress.get()))
   const [chairInk, setChairInk] = useState(() => scrollYProgress.get() > 0.95)
   const [captionIndex, setCaptionIndex] = useState(() => captionIndexFor(scrollYProgress.get()))
@@ -97,11 +128,17 @@ function AnimatedScrub() {
   // Fully faded/converged by 0.7 (the active/settled -> chair phase boundary), so the
   // conditional unmount at that boundary never clips a still-visible element.
   const laneOpacity = useTransform(scrollYProgress, [0.14, 0.22, 0.6, 0.7], [0, 1, 1, 0])
-  const lane0X = useTransform(scrollYProgress, [0.15, 0.45, 0.6, 0.7], [0, LANE_X[0], LANE_X[0], 0])
-  const lane1X = useTransform(scrollYProgress, [0.15, 0.45, 0.6, 0.7], [0, LANE_X[1], LANE_X[1], 0])
-  const lane2X = useTransform(scrollYProgress, [0.15, 0.45, 0.6, 0.7], [0, LANE_X[2], LANE_X[2], 0])
-  const lane3X = useTransform(scrollYProgress, [0.15, 0.45, 0.6, 0.7], [0, LANE_X[3], LANE_X[3], 0])
+  const lane0X = useTransform(scrollYProgress, [0.15, 0.45, 0.6, 0.7], [0, laneXTarget[0], laneXTarget[0], 0])
+  const lane1X = useTransform(scrollYProgress, [0.15, 0.45, 0.6, 0.7], [0, laneXTarget[1], laneXTarget[1], 0])
+  const lane2X = useTransform(scrollYProgress, [0.15, 0.45, 0.6, 0.7], [0, laneXTarget[2], laneXTarget[2], 0])
+  const lane3X = useTransform(scrollYProgress, [0.15, 0.45, 0.6, 0.7], [0, laneXTarget[3], laneXTarget[3], 0])
   const laneX = [lane0X, lane1X, lane2X, lane3X]
+
+  const lane0Y = useTransform(scrollYProgress, [0.15, 0.45, 0.6, 0.7], [0, laneYTarget[0], laneYTarget[0], 0])
+  const lane1Y = useTransform(scrollYProgress, [0.15, 0.45, 0.6, 0.7], [0, laneYTarget[1], laneYTarget[1], 0])
+  const lane2Y = useTransform(scrollYProgress, [0.15, 0.45, 0.6, 0.7], [0, laneYTarget[2], laneYTarget[2], 0])
+  const lane3Y = useTransform(scrollYProgress, [0.15, 0.45, 0.6, 0.7], [0, laneYTarget[3], laneYTarget[3], 0])
+  const laneY = [lane0Y, lane1Y, lane2Y, lane3Y]
 
   const line1Opacity = useTransform(scrollYProgress, [0.17, 0.23], [0, 1])
   const line2Opacity = useTransform(scrollYProgress, [0.23, 0.29], [0, 1])
@@ -114,34 +151,41 @@ function AnimatedScrub() {
   return (
     <div ref={wrapperRef} data-council-wrapper className="relative" style={{ height: "175vh" }}>
       <div className="sticky top-0 flex h-screen flex-col items-center justify-center overflow-hidden">
-        <div className="relative flex h-[80px] w-full items-center justify-center">
+        <div className="relative flex h-[80px] w-full items-center justify-center px-6">
           {phase === "idle" && (
             <motion.div
               style={{ opacity: promptOpacity }}
-              className="absolute rounded-full border border-border/60 px-4 py-2 text-sm text-foreground"
+              className="absolute max-w-[90vw] rounded-2xl border border-border/60 px-4 py-2 text-center text-sm text-foreground sm:max-w-none sm:rounded-full"
             >
               {content.councilDemo.prompt}
             </motion.div>
           )}
         </div>
 
-        <div className="relative mt-10 flex h-[220px] w-full items-center justify-center">
+        <div
+          className={cn(
+            "relative mt-6 flex w-full items-center justify-center sm:mt-10",
+            isMobile ? "h-[540px]" : "h-[220px]"
+          )}
+        >
           {(phase === "active" || phase === "settled") &&
             content.councilDemo.models.map((model, i) => (
               <LaneCard
                 key={model.id}
                 model={model}
                 x={laneX[i]}
+                y={laneY[i]}
                 opacity={laneOpacity}
                 phase={phase}
                 lineOpacities={lineOpacities}
+                isMobile={isMobile}
               />
             ))}
 
           {phase === "chair" && (
             <motion.div
               style={{ opacity: chairOpacity, scale: chairScale }}
-              className="absolute w-[300px] rounded-lg border border-brand/50 bg-brand/[0.06] px-4 py-4 text-left"
+              className="absolute w-[85vw] max-w-[300px] rounded-lg border border-brand/50 bg-brand/[0.06] px-4 py-4 text-left"
             >
               <p className={cn("text-sm", chairInk ? "text-foreground" : "text-brand")}>
                 {content.councilDemo.synthesis.lines[0]}

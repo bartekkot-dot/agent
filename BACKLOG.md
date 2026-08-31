@@ -24,26 +24,56 @@ token table — don't be surprised the values change again in M1, that's expecte
       depends: M2
 - [x] M5 — §4 micro-moments (provider-grid connect, research path-draw) — `backlog/M5.md`
       depends: M2
-- [ ] M6 — Reduced-motion / both-theme / mobile / build final pass — `backlog/M6.md`
+- [x] M6 — Reduced-motion / both-theme / mobile / build final pass — `backlog/M6.md`
       depends: M3, M4, M5
 
 M3, M4, M5 each only depend on M2 (the static skeleton), not on each other — they touch
 different sections (Council / Hero / Provider-grid+Research) and can run in any order
 once M2 lands. Still: one item, then stop for review, per the default rule.
 
-## Known open questions (not yet resolved — surfaced inside the relevant item)
+## Known open questions
 
-- **ValueSection fate** (M2): the addendum's new page order and `content.ts` have no
-  pricing/"free and open" section at all, but the user never explicitly approved dropping
-  it (only Showcase/Integrations/FAQ + videos were approved). M2 must stop and ask before
-  deleting it.
-- **Council demo model IDs are placeholders** (M3, M4): `claude-opus-4-8`, `gpt-5.1`,
-  `gemini-3-pro`, `local · llama-4` in the addendum's `councilDemo` are marked TODO by the
-  spec itself ("confirm the IDs you actually ship with"). Must be confirmed with the user
-  before shipping, not silently invented/kept.
-- **Stats are placeholders** (M2): `"8+" Providers supported` and `"MIT" Open source` are
-  marked TODO in the addendum. Must be confirmed with the user (real provider count, real
-  license) before shipping.
+- ~~**ValueSection fate**~~ — resolved in M2: kept, placed between Privacy and Stats, and
+  brought in line with Privacy's "no numbering/no eyebrow" fix.
+- ~~**Stats were placeholders**~~ — resolved in M2: shipped only the two self-evidently
+  true numbers (100% on-device, 0 servers), dropped the two unconfirmed ones rather than
+  guess.
+- **Still open — Council demo model IDs**: `claude-opus-4-8`, `gpt-5.1`, `gemini-3-pro`,
+  `local · llama-4` are the addendum spec's own placeholders, marked TODO by the spec
+  itself. They're now visible and *animated* in three places (M3's scroll-scrub, M4's hero
+  demo, and implicitly anywhere `councilDemo` is read). **Confirm the real IDs before this
+  ships publicly** — this is the one item this backlog could not resolve on its own since
+  it requires product information (which models actually ship) that isn't in the repo.
+
+## Full arc summary (M1–M6, all done 2026-08-31)
+
+Green "live" accent replacing the prior blue brand color (with a real AA-contrast fix along
+the way — the spec's own light-mode green value failed WCAG by a hair, caught by actually
+computing contrast rather than trusting the spec's number); Cabinet Grotesk headings; a
+full page restructure (Hero → Models → Council → Research → Privacy → Value → Stats →
+Download, dropping Showcase/Integrations/FAQ/videos per explicit instruction, PLAN.md's G6
+formally superseded not silently violated); three signature motion moments (Council
+scroll-scrub, hero scripted demo, two micro-moments) all built around one core lesson
+discovered in M3 and reused everywhere after: prefer discrete phase-state + conditional
+mount/unmount over continuous motion values for anything that needs to reach and hold an
+"off" state, because a real (still not fully root-caused, but reliably reproducible in both
+dev and production builds) Framer Motion bug can leave continuous opacity transforms stuck
+partway. Mobile got a real layout fix, not just a note: the scroll-scrub's four lanes,
+positioned at fixed pixel offsets, completely broke on a 380px viewport (two lanes clipped
+off-screen entirely) — replaced with a responsive single-column stack below 640px, sized
+against actually-measured card heights rather than guessed spacing.
+
+Against `PLAN.md`'s `Definition of done` (as amended by this addendum): single page, all
+copy from `content.ts` (merged, not overwritten — real GitHub release-fetch flow preserved
+throughout) ✓; light + dark both readable, AA contrast verified with real numbers, not
+assumed ✓; download resolves to the correct OS asset from the real latest release, with
+fallback (unchanged, still works — confirmed live in screenshots throughout) ✓; motion is
+calm outside the three explicitly-sanctioned signature moments and respects
+`prefers-reduced-motion` — verified by code construction (the animated variant of each
+moment simply never mounts/never applies under reduced motion, not just "looks static") ✓;
+clean `npm run build` at every single stage, deployed target corrected to Cloudflare Pages
+in `PLAN.md` ✓. The one item this backlog cannot close by itself: **the four model IDs
+need real confirmation before public ship** (see above).
 
 ## Completion notes
 
@@ -269,3 +299,61 @@ the last provider tile (highest stagger delay) still faintly tinted — traced t
 waiting less time (900ms) than that tile's own delay+duration budget (~1.28s), not a
 component bug; confirmed fully resolved with a longer wait. Screenshots in
 `/private/tmp/claude-501/.../scratchpad/m5-{dark,light,reduced}-*.png`.
+
+### M6 — done 2026-08-31
+**Reduced-motion sweep**: verified by construction, not just visual inspection, per the
+prompt's explicit warning about paused-but-still-scheduled animations. Every animated
+moment (M3 scrub, M4 hero demo + replay/re-enter, M5's two micro-moments) renders an
+entirely different, simpler component/branch under reduced motion — the JS
+timers/`useScroll`/`useMotionValueEvent` subscriptions for the animated variant **never
+mount** (conditional `reducedMotion ? <Static/> : <Animated/>`), and the two CSS-only M5
+moments have their keyframe rules themselves scoped inside
+`@media (prefers-reduced-motion: no-preference)`, so reduced motion means the animation
+class does nothing at all, not "runs and immediately finishes." Zero JS loops possible in
+either case, by construction.
+
+**Both-theme sweep**: re-verified AA contrast against the *actual shipped* `--live` value
+(`#147847` light / `#35C07A` dark — the addendum's `#158A4E` was already replaced in M1
+after failing contrast) — light ~5.5:1, dark ~8.4:1, both comfortably over the 4.5:1 floor.
+Light-mode glow still reads as an intentional soft tint with M4's hero demo added (more
+green elements near it, same glow mechanism, no clash observed). No section reads
+unfinished in either theme.
+
+**Mobile pass — found and fixed a real bug, not just noted it**: at a 380px viewport,
+`council-scrub.tsx`'s four lanes (fixed pixel offsets ±330/±110) badly overflowed — the
+outer two lanes were clipped completely out of view by the sticky container's
+`overflow-hidden` (confirmed via `getBoundingClientRect`, not just a screenshot: the lane
+elements were positioned at x≈-140 and x≈520 against a 380px viewport). Fixed with a
+`useIsMobile()` breakpoint hook (max-width: 639px) driving separate mobile/desktop target
+arrays for the existing `x`/new `y` motion values. First attempt used a 2x2 grid, which
+looked fine at a glance but had 2–10px vertical overlaps between adjacent cards once
+actually measured via `getBoundingClientRect` (card height varies with each model's line
+count — a fixed grid row height can't fit all of them). Replaced with a single-column
+vertical stack instead, spaced `140px` apart center-to-center — enough to clear the tallest
+card (~132px) with margin, confirmed via the same bounding-rect measurement technique
+rather than trusting a screenshot. Provider grid and every other section already reflowed
+correctly on mobile with no changes needed (`grid-cols-2` responsive classes were already
+in place from M2/M5). No horizontal overflow anywhere on the full page, either theme,
+confirmed via `document.documentElement.scrollWidth` swept across full scroll range.
+
+**Process note for future sessions**: hit a confusing false trail during the mobile fix —
+re-reading a screenshot at the *same file path* after a rebuild repeatedly showed a stale
+cached image despite the underlying PNG file, build output, and even live
+`getBoundingClientRect()` all confirming the fix had taken effect. Writing to a fresh,
+never-before-used filename immediately showed the correct result. If a screenshot ever
+looks suspiciously identical to a previous one after a code change that should visibly
+affect it, verify with `getBoundingClientRect`/`getComputedStyle` or a new filename before
+concluding the fix didn't work.
+
+**a11y floor**: all new interactive elements (nav links, nav CTA, Replay buttons) have
+visible focus indication — either explicit `focus-visible:ring-*` classes (Replay buttons)
+or the project's global `outline-ring/50` base-layer rule (plain `<a>` tags, which keeps the
+browser's native focus outline but tints it to match the design system). Decorative SVGs
+(`deep-research-diagram.tsx`) already carry `aria-hidden="true"`. Landmark structure
+(`<header>`/`<nav>`/`<main>`/`<footer>`) untouched by the section reorder — only the
+`<section>` children within `<main>` changed order/content.
+
+`npm run build` clean as the final check. Full arc summary and `Definition of done`
+reconciliation recorded above under "Full arc summary." This closes the backlog except for
+the one item that needs the user, not more engineering: confirming the real model IDs
+before public ship.
