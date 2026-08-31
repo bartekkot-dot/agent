@@ -20,7 +20,7 @@ export function DownloadSection() {
   return (
     <section
       id="download"
-      className="relative scroll-mt-12 overflow-hidden border-t border-border/40 py-20"
+      className="relative scroll-mt-12 overflow-hidden border-t border-border/40 py-20 sm:py-24"
     >
       <Reveal>
         <Container className="flex justify-center">

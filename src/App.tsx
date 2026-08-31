@@ -2,6 +2,7 @@ import { DownloadSection } from "@/components/download-section"
 import { FaqSection } from "@/components/faq-section"
 import { FeaturesSection } from "@/components/features-section"
 import { HeroSection } from "@/components/hero-section"
+import { IntegrationsStrip } from "@/components/integrations-strip"
 import { PrivacySection } from "@/components/privacy-section"
 import { ShowcaseSection } from "@/components/showcase-section"
 import { SiteFooter } from "@/components/site-footer"
@@ -17,6 +18,7 @@ function App() {
       <main id="main-content" tabIndex={-1} className="flex-1 scroll-mt-12 outline-none">
         <HeroSection />
         <ShowcaseSection />
+        <IntegrationsStrip />
         <FeaturesSection />
         <PrivacySection />
         <ValueSection />

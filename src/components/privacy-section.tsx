@@ -6,7 +6,7 @@ export function PrivacySection() {
   return (
     <section
       id="privacy"
-      className="section-divider-mark relative scroll-mt-12 overflow-hidden border-t border-border/40 py-16"
+      className="section-divider-mark relative scroll-mt-12 overflow-hidden border-t border-border/40 py-20 sm:py-24"
     >
       <div aria-hidden="true" className="ledger-grid pointer-events-none absolute inset-0" />
       <div

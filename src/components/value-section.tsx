@@ -6,7 +6,7 @@ export function ValueSection() {
   return (
     <section
       id="value"
-      className="section-divider-mark relative scroll-mt-12 overflow-hidden border-t border-border/40 py-16"
+      className="section-divider-mark relative scroll-mt-12 overflow-hidden border-t border-border/40 py-20 sm:py-24"
     >
       <div aria-hidden="true" className="ledger-grid pointer-events-none absolute inset-0" />
       <div
@@ -16,7 +16,7 @@ export function ValueSection() {
 
       <Reveal>
         <Container className="relative max-w-xl text-center">
-          <p className="font-mono text-xs tracking-[0.2em] text-brand uppercase">Pricing</p>
+          <p className="font-mono text-xs tracking-[0.2em] text-brand uppercase">Pricing Model</p>
           <h2 className="mt-2 text-2xl font-medium tracking-tight text-foreground">
             {content.value.heading}
           </h2>
