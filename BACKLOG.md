@@ -20,7 +20,7 @@ token table — don't be surprised the values change again in M1, that's expecte
       depends: M1
 - [x] M3 — §3b Model Council scroll-scrub (signature moment) — `backlog/M3.md`
       depends: M2
-- [ ] M4 — §3a Hero scripted Council demo — `backlog/M4.md`
+- [x] M4 — §3a Hero scripted Council demo — `backlog/M4.md`
       depends: M2
 - [ ] M5 — §4 micro-moments (provider-grid connect, research path-draw) — `backlog/M5.md`
       depends: M2
@@ -194,3 +194,36 @@ immediately with zero animation, as the spec requires
 **Still unconfirmed** (per BACKLOG.md's open questions, unchanged by this item): the four
 `councilDemo` model IDs are the spec's own placeholders — now visible and *moving* in this
 scrub, which makes confirming them before ship more important, not less.
+
+### M4 — done 2026-08-31
+Built `src/components/hero-demo.tsx`: a time-based (not scroll-linked) ~3.5s canned
+sequence — typed-in prompt (`setInterval`-driven character reveal, ~700ms) → four model
+chips mount with a staggered per-line reveal (`framer-motion` `initial`/`animate` +
+per-line `delay`, ~1500ms, pulsing `--live` while "streaming") → brief steady-green pause
+(300ms) → chips unmount, chair/synthesis card mounts and its text crossfades from `--live`
+green to `--ink` via a plain CSS `transition-colors` once the sequence reaches "done"
+(1000ms). Rests there, does not loop. Small "Replay" button restarts it
+(`content.hero.replayLabel`); re-entering view after scrolling away also replays, via the
+existing `useInView` hook (same one `reveal.tsx` uses) tracking view-enter transitions.
+Wired into `hero-section.tsx` below the CTAs as the hero's focal visual (deferred there
+since M2).
+
+Applied M3's lesson from the start instead of rediscovering it: used discrete `step`
+React state (`"typing"|"streaming"|"settled"|"chair"|"done"`) with conditional mount/
+unmount for the prompt/chips/chair, rather than continuous opacity transforms trying to
+reach and hold `0`. Since this component's animations are time-triggered state changes
+(not a continuously-scrubbed value), Framer's `initial`/`animate`/normal enter animations
+are the standard, well-trodden path here anyway — did not hit anything resembling M3's bug
+in this component.
+
+Skipped adding JetBrains Mono (which the *original* brief, not this addendum, floated for
+model-ID chips) — Tailwind's default `font-mono` stack (already used for the model IDs in
+M3's scrub) reads cleanly at this size and avoids both a new font dependency and extending
+the "mono eyebrow" pattern the addendum explicitly warns against.
+
+Verified: `npm run build` clean; both themes; captured frames through the sequence
+(typing, mid-stream with visible per-line stagger, chair) via Playwright — screenshots in
+`/private/tmp/claude-501/.../scratchpad/m4b-{dark,light}-t*.png`. Reduced motion
+(`page.emulateMedia`) renders the full static end composition immediately, no typing/
+streaming (`m4b-reduced-reduced.png`). Replay button tested by clicking it mid-sequence and
+confirming the prompt starts retyping from scratch. No console errors.

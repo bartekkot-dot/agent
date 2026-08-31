@@ -1,5 +1,6 @@
 import { Container } from "@/components/container"
 import { GlowBackground } from "@/components/glow-background"
+import { HeroDemo } from "@/components/hero-demo"
 import { Button } from "@/components/ui/button"
 import { content } from "@/content"
 import { useInView } from "@/hooks/use-in-view"
@@ -38,6 +39,7 @@ export function HeroSection() {
             {content.hero.secondary.label} →
           </a>
         </div>
+        <HeroDemo />
       </Container>
     </section>
   )
