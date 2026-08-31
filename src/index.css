@@ -248,6 +248,54 @@
   }
 }
 
+/* Provider grid "connect": a single outward ripple on first scroll into view, then the
+   tile holds its resting border color (animation-fill-mode: forwards) — the center tile
+   is lit unconditionally in markup, this only touches the outer provider tiles. */
+@media (prefers-reduced-motion: no-preference) {
+  .tile-pulse-animate {
+    animation: tile-pulse 0.7s ease-out both;
+    animation-delay: var(--pulse-delay, 0s);
+  }
+}
+
+@keyframes tile-pulse {
+  0% {
+    border-color: var(--border);
+  }
+  35% {
+    border-color: var(--brand);
+  }
+  100% {
+    border-color: var(--border);
+  }
+}
+
+/* Deep Research path draw: draws in once on scroll into view, each node lights as the
+   line reaches it and holds steady green (no "replay" control — this is a one-shot
+   micro-moment, not a signature diagram like Model Council's). */
+@media (prefers-reduced-motion: no-preference) {
+  .research-line-animate {
+    animation: council-line-draw 0.5s ease-out both;
+  }
+
+  .research-node-animate {
+    animation: research-node-lit 0.4s ease-out both;
+  }
+}
+
+/* Applied to SVG <rect>/<text> pairs, not HTML elements — animates stroke/fill, not
+   border-color/color. */
+@keyframes research-node-lit {
+  from {
+    stroke: currentColor;
+    fill: currentColor;
+  }
+  to {
+    stroke: var(--brand);
+    fill: var(--brand);
+  }
+}
+
 body {
   background-color: var(--color-background);
   color: var(--color-foreground);

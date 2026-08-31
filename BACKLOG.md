@@ -22,7 +22,7 @@ token table — don't be surprised the values change again in M1, that's expecte
       depends: M2
 - [x] M4 — §3a Hero scripted Council demo — `backlog/M4.md`
       depends: M2
-- [ ] M5 — §4 micro-moments (provider-grid connect, research path-draw) — `backlog/M5.md`
+- [x] M5 — §4 micro-moments (provider-grid connect, research path-draw) — `backlog/M5.md`
       depends: M2
 - [ ] M6 — Reduced-motion / both-theme / mobile / build final pass — `backlog/M6.md`
       depends: M3, M4, M5
@@ -227,3 +227,45 @@ Verified: `npm run build` clean; both themes; captured frames through the sequen
 (`page.emulateMedia`) renders the full static end composition immediately, no typing/
 streaming (`m4b-reduced-reduced.png`). Replay button tested by clicking it mid-sequence and
 confirming the prompt starts retyping from scratch. No console errors.
+
+### M5 — done 2026-08-31
+**4a — provider grid connect** (`models-section.tsx`): added a dedicated `useInView`
+(separate from the section's own `<Reveal>` — different concern, page-entrance vs. this
+micro-moment) that latches a `hasPlayed` boolean true on first intersection and never back
+to false. Each outer provider tile gets a `tile-pulse-animate` CSS class (new keyframes in
+`index.css`, gated the same way the existing `.council-node-animate`/`.glow-orb-animate`
+rules are — inside `@media (prefers-reduced-motion: no-preference)`) with a per-tile
+`--pulse-delay` custom property for the outward stagger. Because `hasPlayed` is a one-way
+latch and re-applying an unchanged className doesn't restart a CSS animation, "fires once,
+never repeats" holds by construction, not just by the timing of my test screenshots — no
+extra guard code needed for that requirement. Reduced motion needed **zero** extra
+branching: the keyframe class does nothing when motion is reduced, so the outer tiles just
+stay in their base unlit state forever and the center tile is unconditionally lit already
+in the static markup — exactly the spec's "reduced motion: static, center lit" outcome, for
+free.
+
+**4b — Deep Research path draw** (`deep-research-diagram.tsx`, fully rewritten): reconciled
+to `content.research.steps` (5 nodes: Plan/Search/Read/Compile/Answer — the old hardcoded
+array had 4, "Synthesize" instead of "Compile", no "Answer"). Draw-in uses the *same*
+`--dash-length`/keyframe technique the deleted `model-council-diagram.tsx` used (reused the
+existing `council-line-draw` keyframe for the connecting lines; added a new
+`research-node-lit` keyframe for the node rect/text fill+stroke, correctly targeting SVG
+`fill`/`stroke` rather than the HTML `border-color`/`color` I wrote in a first draft and
+caught before shipping). Each element's React-rendered attributes are already set to the
+"lit" value the instant `hasPlayed`/reduced-motion is true — the CSS animation only
+provides the progressive *reveal* transition from muted to lit; if the animation class
+never applies (reduced motion), the element still renders correctly lit immediately, same
+zero-extra-branching outcome as 4a. Per-node/line `animationDelay` (`0.15s` apart) creates
+the left-to-right draw sequence. Final "Answer" node settles to steady green, not ink — this
+is deliberately different from M3's chair-card fade, which signals "conversation over"; a
+finished checklist item just stays lit.
+
+Verified: `npm run build` clean; both themes; Playwright scroll-into-view tests for both
+moments, confirming: not-yet-played state, mid/settled state, a second scroll-away-and-back
+visit (models grid — visually identical to first settle, and structurally guaranteed not to
+re-fire per the latch argument above), and reduced-motion immediate-lit state for both.
+One false alarm caught and resolved during verification: a settled-state screenshot showed
+the last provider tile (highest stagger delay) still faintly tinted — traced to my test
+waiting less time (900ms) than that tile's own delay+duration budget (~1.28s), not a
+component bug; confirmed fully resolved with a longer wait. Screenshots in
+`/private/tmp/claude-501/.../scratchpad/m5-{dark,light,reduced}-*.png`.
