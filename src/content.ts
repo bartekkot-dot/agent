@@ -15,14 +15,18 @@ export const content = {
 
   // ── Hero (§3a: scripted Council demo is the focal visual, added in M4) ──
   hero: {
+    // Small kicker label above the headline (art-direction pass) — not new claim
+    // copy, just surfaces the feature's own name, already used verbatim in
+    // council.sub below ("Model Council sends your prompt...").
+    eyebrow: "Model Council",
     headline: [
       { text: "Ask every model at once. ", tone: "ink" },
       { text: "Get one answer you can trust.", tone: "muted" },
     ] as Segment[],
     sub:
-      `${APP_NAME} is a local desktop app that sends your prompt to every ` +
-      `AI model you use — at the same time — then has a neutral model combine ` +
-      `their answers into one.`,
+      `${APP_NAME} sends your prompt to every AI model you use at once, then a ` +
+      `neutral model combines their answers into one. Free, open source, and for ` +
+      `most people cheaper than a single subscription.`,
     // Scrolls to the download section, which does real per-OS asset detection —
     // the hero can't know the visitor's OS before that, so it doesn't claim one.
     primary: { label: "Download", href: "#download" },
@@ -192,10 +196,11 @@ export const content = {
   // placed between Privacy and Stats since it's another "why trust/choose this" reason.
   value: {
     id: "value",
-    heading: "Free, open, and pay only for what you use",
+    heading: "Everything a premium AI app does. For free.",
     lead:
-      "Everything a premium AI app does — Deep Research, Model Council, and every " +
-      "feature you'd expect from a modern AI client — with no subscription and no paywall.",
+      "No subscription, no paywall — every feature is included, and nothing is gated " +
+      "behind a pro tier. A subscription charges the same flat fee whether you use it " +
+      "once or every day; here, you pay a model provider only for what you actually use.",
     points: [
       {
         title: "Free and open source",

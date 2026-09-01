@@ -41,7 +41,7 @@ export function DeepResearchDiagram({ caption }: { caption: string }) {
   const playing = hasPlayed && !reducedMotion
 
   return (
-    <div ref={ref} className="mx-auto mt-6 max-w-[420px]">
+    <div ref={ref} className="mx-auto mt-6 w-full max-w-[560px]">
       <svg viewBox="0 0 380 160" aria-hidden="true" className="w-full text-muted-foreground">
         <defs>
           <marker id="research-arrow" viewBox="0 0 8 8" refX="7" refY="4" markerWidth="6" markerHeight="6" orient="auto">

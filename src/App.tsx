@@ -17,11 +17,11 @@ function App() {
       <SiteHeader />
       <main id="main-content" tabIndex={-1} className="flex-1 scroll-mt-12 outline-none">
         <HeroSection />
-        <ModelsSection />
+        <ValueSection />
         <CouncilSection />
+        <ModelsSection />
         <ResearchSection />
         <PrivacySection />
-        <ValueSection />
         <StatsSection />
         <DownloadSection />
       </main>

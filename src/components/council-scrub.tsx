@@ -9,6 +9,7 @@ import {
   type MotionValue,
 } from "framer-motion"
 
+import { GlowBackground } from "@/components/glow-background"
 import { content } from "@/content"
 import { cn } from "@/lib/utils"
 
@@ -77,7 +78,7 @@ function LaneCard({
     <motion.div
       style={{ x, y, opacity }}
       className={cn(
-        "absolute rounded-lg border px-3 py-3 text-left transition-colors duration-300",
+        "absolute rounded-lg border bg-background/75 px-3 py-3 text-left backdrop-blur-sm transition-colors duration-300",
         isMobile ? "w-[85vw] max-w-[280px]" : "w-[210px]",
         isLive && "border-brand animate-pulse",
         isDone && "border-brand",
@@ -92,7 +93,7 @@ function LaneCard({
           <motion.p
             key={line}
             style={{ opacity: lineOpacities[i] }}
-            className="text-[11px] leading-snug text-muted-foreground"
+            className="text-[11px] leading-snug text-body"
           >
             {line}
           </motion.p>
@@ -177,11 +178,19 @@ function AnimatedScrub() {
   return (
     <div ref={wrapperRef} data-council-wrapper className="relative" style={{ height: "300vh" }}>
       <div className="sticky top-0 flex h-screen flex-col items-center justify-center overflow-hidden">
+        {/* Pinned to the viewport-sized sticky box, not the 300vh scroll track — a glow
+            centered on the track's own height would sit ~1.5 screens below the fold for
+            nearly the whole scroll. Vivid on purpose (this is the page's loud moment) —
+            contrast is handled by giving every text-bearing element its own near-solid
+            backdrop (bg-background/75 + backdrop-blur) rather than by capping the glow,
+            so intensity here is decoupled from legibility. */}
+        <GlowBackground intensity={1.4} />
+
         <div className="relative flex h-[80px] w-full items-center justify-center px-6">
           {phase === "idle" && (
             <motion.div
               style={{ opacity: promptOpacity }}
-              className="absolute max-w-[90vw] rounded-2xl border border-border/60 px-4 py-2 text-center text-sm text-foreground sm:max-w-none sm:rounded-full"
+              className="absolute max-w-[90vw] rounded-2xl border border-border/60 bg-background/75 px-4 py-2 text-center text-sm text-foreground backdrop-blur-sm sm:max-w-none sm:rounded-full"
             >
               {content.councilDemo.prompt}
             </motion.div>
@@ -211,7 +220,7 @@ function AnimatedScrub() {
           {phase !== "idle" && (
             <motion.div
               style={{ opacity: chairOpacity, scale: chairScale }}
-              className="absolute w-[85vw] max-w-[360px] rounded-lg border border-brand/50 bg-brand/[0.06] px-4 py-4 text-left"
+              className="absolute w-[85vw] max-w-[360px] rounded-lg border border-brand/50 bg-background/80 px-4 py-4 text-left backdrop-blur-sm"
             >
               <div className={cn("space-y-1 text-sm", chairInk ? "text-foreground" : "text-brand")}>
                 {content.councilDemo.synthesis.lines.map((line) => (
@@ -222,7 +231,7 @@ function AnimatedScrub() {
           )}
         </div>
 
-        <div className="relative mt-10 h-5 text-sm text-muted-foreground">
+        <div className="relative mt-10 h-5 w-full text-center text-sm text-muted-foreground">
           <p className="absolute inset-x-0">{content.council.captions[captionIndex]}</p>
         </div>
       </div>
@@ -232,25 +241,26 @@ function AnimatedScrub() {
 
 function StaticEndState() {
   return (
-    <div className="flex flex-col items-center gap-8 py-10">
-      <div className="rounded-full border border-border/60 px-4 py-2 text-sm text-foreground">
+    <div className="relative flex flex-col items-center gap-8 overflow-hidden py-10">
+      <GlowBackground intensity={1.4} animate={false} />
+      <div className="relative rounded-full border border-border/60 bg-background/75 px-4 py-2 text-sm text-foreground backdrop-blur-sm">
         {content.councilDemo.prompt}
       </div>
       <div className="relative flex w-full max-w-2xl items-center justify-center">
         <div className="grid grid-cols-2 gap-3 opacity-30 sm:grid-cols-4">
           {content.councilDemo.models.map((model) => (
-            <div key={model.id} className="w-[160px] rounded-lg border border-border/60 px-3 py-3 text-left">
+            <div key={model.id} className="w-[160px] rounded-lg border border-border/60 bg-background/75 px-3 py-3 text-left backdrop-blur-sm">
               <p className="font-mono text-[10px] text-muted-foreground">{model.id}</p>
             </div>
           ))}
         </div>
       </div>
-      <div className="w-full max-w-md space-y-1 rounded-lg border border-brand/50 bg-brand/[0.06] px-4 py-4 text-left text-sm text-foreground">
+      <div className="relative w-full max-w-md space-y-1 rounded-lg border border-brand/50 bg-background/80 px-4 py-4 text-left text-sm text-foreground backdrop-blur-sm">
         {content.councilDemo.synthesis.lines.map((line) => (
           <p key={line}>{line}</p>
         ))}
       </div>
-      <ul className="flex flex-wrap items-center justify-center gap-x-8 gap-y-2 text-sm text-muted-foreground">
+      <ul className="relative flex flex-wrap items-center justify-center gap-x-8 gap-y-2 text-sm text-muted-foreground">
         {content.council.captions.map((caption) => (
           <li key={caption}>{caption}</li>
         ))}

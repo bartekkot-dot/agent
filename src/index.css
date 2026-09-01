@@ -2,13 +2,14 @@
 @import "tw-animate-css";
 @import "shadcn/tailwind.css";
 @import "@fontsource-variable/geist";
+@import "@fontsource-variable/bricolage-grotesque";
 
 @custom-variant dark (&:where(.dark, .dark *));
 
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-heading: 'Cabinet Grotesk', 'Geist Variable', sans-serif;
+  --font-heading: 'Bricolage Grotesque Variable', 'Geist Variable', sans-serif;
   --font-sans: 'Geist Variable', sans-serif;
   --color-sidebar-ring: var(--sidebar-ring);
   --color-sidebar-border: var(--sidebar-border);
@@ -41,6 +42,8 @@
   --color-card: var(--card);
   --color-brand: var(--brand);
   --color-brand-foreground: var(--brand-foreground);
+  --color-subhead: var(--subhead);
+  --color-body: var(--body);
   --radius-sm: calc(var(--radius) * 0.6);
   --radius-md: calc(var(--radius) * 0.8);
   --radius-lg: var(--radius);
@@ -89,6 +92,19 @@
      measures ~4.39:1 (WCAG AA needs 4.5:1) — darkened slightly to pass with margin. */
   --brand: #147847;
   --brand-foreground: #ffffff;
+
+  /* Supporting tones for the hero constellation motif — decorative node color
+     only (never body text), so held to a lighter bar than the text tiers below. */
+  --constellation-a: #6b8fd6;
+  --constellation-b: #a06bd6;
+
+  /* Contrast tiers (design pass): --muted-foreground above is for captions/labels
+     ONLY (nav, model-id tags, timestamps, footer) — it was previously doing double
+     duty as body copy, which flattened heading/body/caption into one dim register.
+     --subhead is the one intro sentence under a headline; --body is paragraph/list
+     copy. Ratios verified against #ffffff: subhead 13.4:1, body 9.0:1 (WCAG AAA). */
+  --subhead: #2b3126;
+  --body: #454b41;
 }
 
 .dark {
@@ -126,6 +142,16 @@
 
   --brand: #35c07a;
   --brand-foreground: #0a0b0a;
+
+  --constellation-a: #8fb3ff;
+  --constellation-b: #cf9bff;
+
+  /* Ratios verified against #0a0b0a: subhead 15.0:1, body 10.2:1 (WCAG AAA). Both
+     re-verified against a 0.35-intensity brand glow surface (Council) — see
+     council-section.tsx — worst case (peak animation, orb center) still clears
+     AA on every tier, incl. muted (4.81:1). */
+  --subhead: #dde2d6;
+  --body: #b7bdae;
 }
 
 @media (prefers-reduced-motion: no-preference) {
@@ -139,6 +165,23 @@
 
   .dark .glow-orb-animate {
     animation: glow-drift-dark 12s ease-in-out infinite alternate;
+  }
+
+  .model-marquee-animate {
+    animation: model-marquee 26s linear infinite;
+  }
+}
+
+/* Hero identity motif: model-name ticker anchored to the hero's bottom edge.
+   Static (no animation, no duplicated track) under reduced motion — the
+   duplicated second half of the track only needs to exist to make the loop
+   seamless while scrolling. */
+@keyframes model-marquee {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-50%);
   }
 }
 

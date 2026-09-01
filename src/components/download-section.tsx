@@ -24,21 +24,21 @@ export function DownloadSection() {
     >
       <Reveal>
         <Container className="flex justify-center">
-          <div className="relative flex w-full max-w-md flex-col items-center overflow-hidden rounded-2xl border border-border/40 bg-card/30 px-8 py-10 text-center">
-            <GlowBackground intensity={0.45} animate={false} />
+          <div className="relative flex w-full max-w-md flex-col items-center overflow-hidden rounded-2xl border border-border/40 bg-card/30 px-8 py-12 text-center">
+            <GlowBackground intensity={0.7} animate={false} />
 
             <div className="relative flex flex-col items-center gap-4">
-              <h2 className="font-heading max-w-sm text-2xl font-medium tracking-tight">
+              <h2 className="font-heading max-w-sm text-3xl font-semibold tracking-tight">
                 {content.download.headline.map((segment) => (
                   <span
                     key={segment.text}
-                    className={segment.tone === "ink" ? "text-foreground" : "text-muted-foreground"}
+                    className={segment.tone === "ink" ? "text-foreground" : "text-subhead"}
                   >
                     {segment.text}
                   </span>
                 ))}
               </h2>
-              <p className="text-sm text-muted-foreground">{content.download.sub}</p>
+              <p className="text-sm text-body">{content.download.sub}</p>
 
               {state.status === "loading" && (
                 <p className="text-sm text-muted-foreground">Checking for the latest release…</p>
