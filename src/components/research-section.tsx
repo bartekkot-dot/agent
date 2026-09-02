@@ -1,8 +1,8 @@
 import { Container } from "@/components/container"
 import { DeepResearchDiagram } from "@/components/deep-research-diagram"
+import { ProductVideo } from "@/components/product-video"
 import { Reveal } from "@/components/reveal"
 import { content } from "@/content"
-import { withBase } from "@/lib/url"
 
 // Citation card: shows the loop's payoff — several sources read and reconciled
 // into one verdict — instead of a bullet+icon list asserting "cites sources."
@@ -27,6 +27,11 @@ function ResearchCitation() {
   )
 }
 
+// Two stacked two-column rows, mirroring council-section.tsx's shape: text
+// paired with the framed video (real proof — the loop's "Researched: ..."
+// entries actually accumulating, which a static frame can't show), then the
+// citation card paired with the loop diagram. Pairing every block with a
+// neighbor avoids a lone wide block stranded with dead space beside it.
 export function ResearchSection() {
   return (
     <section
@@ -35,21 +40,7 @@ export function ResearchSection() {
     >
       <Container className="relative">
         <Reveal>
-          {/* Static frame, not the ProductVideo loop: the recording is a generic
-              session that visibly contradicted the specific citation card below it
-              (see PLAN.md review) — a plain screenshot doesn't promise more than it shows. */}
-          <div className="max-w-2xl overflow-hidden rounded-xl border border-border/60 bg-card shadow-[0_30px_70px_-30px_rgba(0,0,0,0.55)]">
-            <div className="aspect-[16/10] w-full">
-              <img
-                src={withBase(content.research.demo.poster)}
-                alt={content.research.demo.alt}
-                loading="lazy"
-                className="block h-full w-full object-cover"
-              />
-            </div>
-          </div>
-
-          <div className="mt-16 grid gap-12 sm:grid-cols-2 sm:items-center sm:gap-16">
+          <div className="grid grid-cols-1 gap-12 sm:grid-cols-2 sm:items-center sm:gap-16">
             <div>
               <p className="text-sm text-muted-foreground">{content.research.connective}</p>
               <h2 className="font-heading mt-3 text-4xl font-semibold tracking-tight sm:text-5xl">
@@ -63,10 +54,17 @@ export function ResearchSection() {
                 ))}
               </h2>
               <p className="mt-5 text-lg text-subhead">{content.research.sub}</p>
-              <div className="mt-6">
-                <ResearchCitation />
-              </div>
             </div>
+
+            <ProductVideo
+              src={content.research.demo.src}
+              poster={content.research.demo.poster}
+              alt={content.research.demo.alt}
+            />
+          </div>
+
+          <div className="mt-16 grid grid-cols-1 gap-12 sm:grid-cols-2 sm:items-center sm:gap-16">
+            <ResearchCitation />
             <DeepResearchDiagram />
           </div>
         </Reveal>

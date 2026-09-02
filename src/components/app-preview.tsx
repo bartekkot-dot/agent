@@ -10,7 +10,7 @@ export function AppPreview() {
   return (
     <section className="py-10 sm:py-14">
       <Container>
-        <div className="flex max-w-4xl flex-col gap-10">
+        <div className="flex w-full flex-col gap-10">
           {content.appPreview.shots.map((shot, i) => (
             <div
               key={shot.src}
