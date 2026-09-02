@@ -22,7 +22,7 @@ export function CouncilSection() {
       </div>
 
       <Container className="relative">
-        <div className="mx-auto max-w-xl text-center">
+        <div className="max-w-xl">
           <h2 className="font-heading text-4xl font-semibold tracking-tight sm:text-5xl">
             {content.council.headline.map((segment) => (
               <span
@@ -36,7 +36,7 @@ export function CouncilSection() {
           <p className="mt-4 text-subhead">{content.council.sub}</p>
         </div>
 
-        <div className="mx-auto mt-10 max-w-2xl">
+        <div className="mt-10 max-w-2xl">
           <ProductVideo
             src={content.council.demo.src}
             poster={content.council.demo.poster}

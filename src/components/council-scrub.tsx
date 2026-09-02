@@ -9,7 +9,6 @@ import {
   type MotionValue,
 } from "framer-motion"
 
-import { GlowBackground } from "@/components/glow-background"
 import { content } from "@/content"
 import { cn } from "@/lib/utils"
 
@@ -178,14 +177,6 @@ function AnimatedScrub() {
   return (
     <div ref={wrapperRef} data-council-wrapper className="relative" style={{ height: "300vh" }}>
       <div className="sticky top-0 flex h-screen flex-col items-center justify-center overflow-hidden">
-        {/* Pinned to the viewport-sized sticky box, not the 300vh scroll track — a glow
-            centered on the track's own height would sit ~1.5 screens below the fold for
-            nearly the whole scroll. Vivid on purpose (this is the page's loud moment) —
-            contrast is handled by giving every text-bearing element its own near-solid
-            backdrop (bg-background/75 + backdrop-blur) rather than by capping the glow,
-            so intensity here is decoupled from legibility. */}
-        <GlowBackground intensity={1.4} />
-
         <div className="relative flex h-[80px] w-full items-center justify-center px-6">
           {phase === "idle" && (
             <motion.div
@@ -242,7 +233,6 @@ function AnimatedScrub() {
 function StaticEndState() {
   return (
     <div className="relative flex flex-col items-center gap-8 overflow-hidden py-10">
-      <GlowBackground intensity={1.4} animate={false} />
       <div className="relative rounded-full border border-border/60 bg-background/75 px-4 py-2 text-sm text-foreground backdrop-blur-sm">
         {content.councilDemo.prompt}
       </div>

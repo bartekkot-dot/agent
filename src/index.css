@@ -88,15 +88,21 @@
   --sidebar-ring: oklch(0.708 0 0);
 
   /* single accent token — change this one value to restyle the brand color */
-  /* MOTION-SPEC.md §1 specifies #158A4E here, but with white foreground text that only
-     measures ~4.39:1 (WCAG AA needs 4.5:1) — darkened slightly to pass with margin. */
-  --brand: #147847;
-  --brand-foreground: #ffffff;
+  /* Pure black/white experiment: brand = ink, same as --primary/--foreground.
+     Used everywhere general (buttons, links, hovers) — deliberately NOT blue. */
+  --brand: oklch(0.205 0 0);
+  --brand-foreground: oklch(0.985 0 0);
 
-  /* Supporting tones for the hero constellation motif — decorative node color
+  /* The ONE place color is allowed to appear: the terminal "answer" node in the
+     two flow diagrams (hero, Deep Research) — nowhere else. Not used for
+     buttons/links/labels/lines. White-on-#2563eb measures 5.17:1 (WCAG AA). */
+  --payoff: #2563eb;
+  --payoff-foreground: #ffffff;
+
+  /* Supporting tone for the hero constellation motif — decorative node color
      only (never body text), so held to a lighter bar than the text tiers below. */
-  --constellation-a: #6b8fd6;
-  --constellation-b: #a06bd6;
+  --constellation-a: rgba(16, 21, 18, 0.55);
+  --constellation-b: rgba(16, 21, 18, 0.3);
 
   /* Contrast tiers (design pass): --muted-foreground above is for captions/labels
      ONLY (nav, model-id tags, timestamps, footer) — it was previously doing double
@@ -140,11 +146,15 @@
   --sidebar-border: oklch(1 0 0 / 10%);
   --sidebar-ring: oklch(0.556 0 0);
 
-  --brand: #35c07a;
-  --brand-foreground: #0a0b0a;
+  --brand: oklch(0.922 0 0);
+  --brand-foreground: oklch(0.205 0 0);
 
-  --constellation-a: #8fb3ff;
-  --constellation-b: #cf9bff;
+  /* Ink-on-#60a5fa measures 7.75:1 (WCAG AAA). Same single-role rule as light mode. */
+  --payoff: #60a5fa;
+  --payoff-foreground: #0a0b0a;
+
+  --constellation-a: rgba(241, 244, 238, 0.55);
+  --constellation-b: rgba(241, 244, 238, 0.3);
 
   /* Ratios verified against #0a0b0a: subhead 15.0:1, body 10.2:1 (WCAG AAA). Both
      re-verified against a 0.35-intensity brand glow surface (Council) — see
@@ -157,14 +167,6 @@
 @media (prefers-reduced-motion: no-preference) {
   html {
     scroll-behavior: smooth;
-  }
-
-  .glow-orb-animate {
-    animation: glow-drift 12s ease-in-out infinite alternate;
-  }
-
-  .dark .glow-orb-animate {
-    animation: glow-drift-dark 12s ease-in-out infinite alternate;
   }
 
   .model-marquee-animate {
@@ -182,47 +184,6 @@
   }
   to {
     transform: translateX(-50%);
-  }
-}
-
-.glow-dot-grid {
-  background-image: radial-gradient(circle, var(--foreground) 1px, transparent 1px);
-  background-size: 28px 28px;
-  opacity: calc(0.08 * var(--glow-intensity, 1));
-  mask-image: radial-gradient(ellipse 60% 60% at 50% 40%, black 0%, transparent 75%);
-  -webkit-mask-image: radial-gradient(ellipse 60% 60% at 50% 40%, black 0%, transparent 75%);
-}
-
-.glow-orb {
-  width: calc(560px * var(--glow-intensity, 1));
-  height: calc(560px * var(--glow-intensity, 1));
-  filter: blur(calc(110px * var(--glow-intensity, 1)));
-  opacity: calc(0.2 * var(--glow-intensity, 1));
-}
-
-.dark .glow-orb {
-  opacity: calc(0.3 * var(--glow-intensity, 1));
-}
-
-@keyframes glow-drift {
-  from {
-    scale: 1;
-    opacity: calc(0.2 * var(--glow-intensity, 1));
-  }
-  to {
-    scale: 1.15;
-    opacity: calc(0.26 * var(--glow-intensity, 1));
-  }
-}
-
-@keyframes glow-drift-dark {
-  from {
-    scale: 1;
-    opacity: calc(0.3 * var(--glow-intensity, 1));
-  }
-  to {
-    scale: 1.15;
-    opacity: calc(0.38 * var(--glow-intensity, 1));
   }
 }
 

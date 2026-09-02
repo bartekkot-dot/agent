@@ -4,14 +4,16 @@ import { content } from "@/content"
 import { useInView } from "@/hooks/use-in-view"
 import { cn } from "@/lib/utils"
 
-// Geometry for content.research.steps (5 nodes) — see MOTION-SPEC.md §4b.
-const NODES = [
-  { x: 4, width: 58 },
-  { x: 76, width: 72 },
-  { x: 162, width: 56 },
-  { x: 232, width: 78 },
-  { x: 324, width: 54 },
-]
+// The real shape: Plan (one-shot) -> Search/Read LOOP (repeats until enough,
+// shown as a literal curved return arrow) -> Compile/Answer (one-shot payoff).
+// This must NOT look like Council's straight fan-out chain — the loop is what
+// makes Deep Research a different mechanism, not a re-skinned pipeline.
+const PLAN = { x: 40, y: 140 }
+const SEARCH = { x: 175, y: 140 }
+const READ = { x: 310, y: 140 }
+const COMPILE = { x: 445, y: 140 }
+const ANSWER = { x: 560, y: 140 }
+const NODE_R = 15
 
 function useReducedMotion() {
   const [reduced, setReduced] = useState(
@@ -26,7 +28,7 @@ function useReducedMotion() {
   return reduced
 }
 
-export function DeepResearchDiagram({ caption }: { caption: string }) {
+export function DeepResearchDiagram() {
   const { ref, inView } = useInView<HTMLDivElement>(0.4)
   const reducedMotion = useReducedMotion()
   const [hasPlayed, setHasPlayed] = useState(false)
@@ -35,79 +37,123 @@ export function DeepResearchDiagram({ caption }: { caption: string }) {
     if (inView) setHasPlayed(true)
   }, [inView])
 
-  // Reduced motion: fully lit immediately, no draw-in. Normal motion: lit only once
-  // scrolled into view, animating from muted to lit (fires once, never repeats).
   const lit = reducedMotion || hasPlayed
   const playing = hasPlayed && !reducedMotion
+  const [planLabel, searchLabel, readLabel, compileLabel, answerLabel] = content.research.steps
 
   return (
-    <div ref={ref} className="mx-auto mt-6 w-full max-w-[560px]">
-      <svg viewBox="0 0 380 160" aria-hidden="true" className="w-full text-muted-foreground">
+    <div ref={ref} className="mt-6 w-full max-w-[560px]">
+      <svg viewBox="0 0 600 220" aria-hidden="true" className="w-full text-border">
         <defs>
           <marker id="research-arrow" viewBox="0 0 8 8" refX="7" refY="4" markerWidth="6" markerHeight="6" orient="auto">
-            <path d="M 0 0 L 8 4 L 0 8 z" fill={lit ? "var(--brand)" : "currentColor"} />
+            <path d="M 0 0 L 8 4 L 0 8 z" fill={lit ? "var(--muted-foreground)" : "currentColor"} />
           </marker>
         </defs>
 
-        {content.research.steps.slice(0, -1).map((step, i) => {
-          const from = NODES[i]
-          const to = NODES[i + 1]
-          const x1 = from.x + from.width
-          const x2 = to.x - 4
-          return (
-            <line
-              key={step}
-              x1={x1}
-              y1="80"
-              x2={x2}
-              y2="80"
-              stroke={lit ? "var(--brand)" : "currentColor"}
+        {/* plan -> search */}
+        <line
+          x1={PLAN.x + NODE_R} y1={PLAN.y} x2={SEARCH.x - NODE_R} y2={SEARCH.y}
+          stroke={lit ? "var(--muted-foreground)" : "currentColor"} strokeWidth="1.5" markerEnd="url(#research-arrow)"
+          className={cn(playing && "research-line-animate")}
+          style={{ "--dash-length": SEARCH.x - NODE_R - (PLAN.x + NODE_R), animationDelay: "0s" } as CSSProperties}
+        />
+
+        {/* search -> read */}
+        <line
+          x1={SEARCH.x + NODE_R} y1={SEARCH.y} x2={READ.x - NODE_R} y2={READ.y}
+          stroke={lit ? "var(--muted-foreground)" : "currentColor"} strokeWidth="1.5" markerEnd="url(#research-arrow)"
+          className={cn(playing && "research-line-animate")}
+          style={{ "--dash-length": READ.x - NODE_R - (SEARCH.x + NODE_R), animationDelay: "0.15s" } as CSSProperties}
+        />
+
+        {/* read -> search: the loop-back, the one thing that makes this shape a LOOP */}
+        <path
+          d={`M ${READ.x - 6} ${READ.y - NODE_R} C ${READ.x - 6} ${READ.y - 78}, ${SEARCH.x + 6} ${SEARCH.y - 78}, ${SEARCH.x + 6} ${SEARCH.y - NODE_R}`}
+          fill="none"
+          stroke={lit ? "var(--muted-foreground)" : "currentColor"}
+          strokeWidth="1.5"
+          strokeDasharray="4 5"
+          markerEnd="url(#research-arrow)"
+          className={cn(playing && "research-line-animate")}
+          style={{ "--dash-length": 170, animationDelay: "0.35s" } as CSSProperties}
+        />
+        <text
+          x={(READ.x + SEARCH.x) / 2}
+          y={READ.y - 88}
+          textAnchor="middle"
+          fontSize="10"
+          fill="var(--muted-foreground)"
+        >
+          {content.research.loopLabel}
+        </text>
+
+        {/* read -> compile: breaking out of the loop once there's enough */}
+        <line
+          x1={READ.x + NODE_R} y1={READ.y} x2={COMPILE.x - NODE_R} y2={COMPILE.y}
+          stroke={lit ? "var(--muted-foreground)" : "currentColor"} strokeWidth="1.5" markerEnd="url(#research-arrow)"
+          className={cn(playing && "research-line-animate")}
+          style={{ "--dash-length": COMPILE.x - NODE_R - (READ.x + NODE_R), animationDelay: "0.55s" } as CSSProperties}
+        />
+
+        {/* compile -> answer: same neutral line as every other connector — only the
+            terminal node itself carries color, per the single-payoff-role rule */}
+        <line
+          x1={COMPILE.x + NODE_R} y1={COMPILE.y} x2={ANSWER.x - NODE_R} y2={ANSWER.y}
+          stroke={lit ? "var(--muted-foreground)" : "currentColor"} strokeWidth="1.5" markerEnd="url(#research-arrow)"
+          className={cn(playing && "research-line-animate")}
+          style={{ "--dash-length": ANSWER.x - NODE_R - (COMPILE.x + NODE_R), animationDelay: "0.7s" } as CSSProperties}
+        />
+
+        {[
+          { pos: PLAN, label: planLabel },
+          { pos: SEARCH, label: searchLabel },
+          { pos: READ, label: readLabel },
+          { pos: COMPILE, label: compileLabel },
+        ].map((n, i) => (
+          <g key={n.label} className={cn(playing && "research-node-animate")} style={{ animationDelay: `${i * 0.15}s` } as CSSProperties}>
+            <circle
+              cx={n.pos.x}
+              cy={n.pos.y}
+              r={NODE_R}
+              fill={lit ? "var(--card)" : "none"}
+              stroke={lit ? "var(--muted-foreground)" : "currentColor"}
               strokeWidth="1.5"
-              markerEnd="url(#research-arrow)"
-              className={cn(playing && "research-line-animate")}
-              style={{ "--dash-length": x2 - x1, animationDelay: `${i * 0.15}s` } as CSSProperties}
             />
-          )
-        })}
+            <text x={n.pos.x} y={n.pos.y + 4} textAnchor="middle" fontSize="9.5" fill={lit ? "var(--foreground)" : "currentColor"}>
+              {n.label}
+            </text>
+          </g>
+        ))}
 
-        {content.research.steps.map((step, i) => {
-          const node = NODES[i]
-          return (
-            <g
-              key={step}
-              className={cn(playing && "research-node-animate")}
-              style={{ animationDelay: `${i * 0.15 + 0.1}s` } as CSSProperties}
-            >
-              <rect
-                x={node.x}
-                y="66"
-                width={node.width}
-                height="28"
-                rx="14"
-                fill={lit ? "var(--brand)" : "none"}
-                fillOpacity={lit ? 0.12 : undefined}
-                stroke={lit ? "var(--brand)" : "currentColor"}
-                strokeWidth="1.5"
-              />
-              <text
-                x={node.x + node.width / 2}
-                y="84"
-                textAnchor="middle"
-                fontSize="11"
-                fill={lit ? "var(--brand)" : "currentColor"}
-              >
-                {step}
-              </text>
-            </g>
-          )
-        })}
+        {/* answer: the one payoff node — checkmark like the hero's answer node, same visual language */}
+        <g
+          role="img"
+          aria-label={answerLabel}
+          className={cn(playing && "research-node-animate")}
+          style={{ animationDelay: "0.6s" } as CSSProperties}
+        >
+          <circle cx={ANSWER.x} cy={ANSWER.y} r={NODE_R + 2} fill="var(--payoff)" />
+          <path
+            d={`M ${ANSWER.x - 7} ${ANSWER.y} l 5 6 l 9 -11`}
+            fill="none"
+            stroke="var(--payoff-foreground)"
+            strokeWidth="2.2"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          />
+        </g>
+
+        {/* plain-word stage captions under the three visual clusters */}
+        <text x={PLAN.x} y="195" textAnchor="middle" fontSize="11" fill="var(--muted-foreground)">
+          {content.research.flowCaptions[0]}
+        </text>
+        <text x={(SEARCH.x + READ.x) / 2} y="195" textAnchor="middle" fontSize="11" fill="var(--muted-foreground)">
+          {content.research.flowCaptions[1]}
+        </text>
+        <text x={(COMPILE.x + ANSWER.x) / 2} y="195" textAnchor="middle" fontSize="11" fill="var(--muted-foreground)">
+          {content.research.flowCaptions[2]}
+        </text>
       </svg>
-
-      {caption && (
-        <div className="mt-3 flex items-center justify-between gap-3 text-xs text-muted-foreground">
-          <span>{caption}</span>
-        </div>
-      )}
     </div>
   )
 }

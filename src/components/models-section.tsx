@@ -19,7 +19,7 @@ export function ModelsSection() {
       <Container>
         <Reveal>
           <div className="grid grid-cols-1 items-center gap-12 lg:grid-cols-[0.9fr_1fr] lg:gap-16">
-            <div className="text-center lg:text-left">
+            <div>
               <h2 className="font-heading text-4xl font-semibold tracking-tight sm:text-5xl">
                 {content.models.headline.map((segment) => (
                   <span
@@ -30,10 +30,10 @@ export function ModelsSection() {
                   </span>
                 ))}
               </h2>
-              <p className="mt-5 max-w-md text-lg text-subhead lg:mx-0">{content.models.sub}</p>
+              <p className="mt-5 max-w-md text-lg text-subhead">{content.models.sub}</p>
             </div>
 
-            <div ref={ref} className="mx-auto grid w-full max-w-md grid-cols-2 gap-3">
+            <div ref={ref} className="grid w-full max-w-md grid-cols-2 gap-3">
               <div
                 key="center"
                 className="col-span-2 flex flex-col items-center justify-center gap-1 rounded-xl border border-brand/40 bg-brand/[0.06] px-4 py-6 text-center"

@@ -27,11 +27,10 @@ function useReducedMotion() {
 // once scrolled near (no blocking initial paint) and never under reduced motion (poster
 // still instead).
 //
-// Art-direction pass: product shots are now framed as hero art — soft shadow, a
-// brand-green glow behind, and a slight tilt that settles flat on hover/focus (desktop
-// only; a tilted video reads as a mistake on a phone-width screen, not a design choice,
-// so it's inert below sm). No added chrome bar here: the recording itself already shows
-// the app's real title bar, so a second fake one on top just doubled up.
+// Same plain frame as app-preview.tsx (thin border, small radius, soft shadow) —
+// one visual language for every screenshot/video on the page, no glow, no tilt.
+// No added chrome bar here: the recording itself already shows the app's real
+// title bar, so a second fake one on top just doubled up.
 export function ProductVideo({ src, poster, alt }: ProductVideoProps) {
   const reducedMotion = useReducedMotion()
   const { ref, inView } = useInView<HTMLDivElement>(0.2)
@@ -44,13 +43,8 @@ export function ProductVideo({ src, poster, alt }: ProductVideoProps) {
   const resolvedPoster = withBase(poster)
 
   return (
-    <div ref={ref} className="group relative">
-      <div
-        aria-hidden="true"
-        className="absolute -inset-6 rounded-[2rem] bg-brand/25 opacity-60 blur-3xl dark:bg-brand/30 dark:opacity-80"
-      />
-
-      <div className="relative overflow-hidden rounded-xl border border-border/40 bg-card shadow-[0_50px_100px_-30px_rgba(0,0,0,0.45)] transition-transform duration-500 ease-out sm:-rotate-1 sm:group-hover:rotate-0">
+    <div ref={ref} className="relative">
+      <div className="relative overflow-hidden rounded-xl border border-border/60 bg-card shadow-[0_30px_70px_-30px_rgba(0,0,0,0.55)]">
         <div className="aspect-[16/10] w-full">
           {shouldLoad && !reducedMotion ? (
             <video
