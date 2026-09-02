@@ -13,7 +13,7 @@ The app supports **both light and dark modes.** Every color and every animation 
 
 We are **bold in exactly three moments**, each of which demonstrates a real capability of the app, and **silent everywhere else.** Do **not** add fade-and-slide-up entrances to sections, and do **not** add hover-lift to cards — that is the generic AI-page default and makes the site feel *less* special. If a section is not one of the three signature moments in §3–§4, it has **zero** entrance animation.
 
-The three animated moments (all tie the green accent to its one meaning: **green = live / thinking / active**):
+The three animated moments (all tie the blue accent to its one meaning: **blue = live / thinking / active**):
 1. **Hero** — a scripted Model Council demo that plays once (§3a).
 2. **Model Council section** — a scroll-scrubbed explainer: one prompt fans out into parallel models and converges into one answer (§3b). This is THE signature moment.
 3. **Two micro-moments** — the provider grid "connecting," and the Deep Research loop drawing its path (§4).
@@ -22,7 +22,7 @@ The three animated moments (all tie the green accent to its one meaning: **green
 
 ## 1. Theme + accent (both modes)
 
-Define the accent per theme — green must stay legible on white:
+Define the accent per theme — blue must stay legible on white:
 
 | Token | Dark mode | Light mode |
 |---|---|---|
@@ -30,10 +30,10 @@ Define the accent per theme — green must stay legible on white:
 | `--surface` | `#12140F` | `#F5F7F3` |
 | `--ink` | `#F1F4EE` | `#101512` |
 | `--muted` | `#868D80` | `#5B635A` |
-| `--live` (accent) | `#35C07A` (brighter) | `#158A4E` (deeper, for AA contrast on white) |
+| `--live` (accent) | `#60A5FA` (brighter) | `#2563EB` (deeper, for AA contrast on white) |
 | `--hairline` | `rgba(255,255,255,0.08)` | `rgba(0,0,0,0.08)` |
 
-**Glow gotcha:** the soft green glow (hero, active lanes) is an *additive* light bloom on dark mode. On **light mode a glow is invisible** — replace it there with a soft green tint fill + a subtle drop shadow, never an additive bloom. Test both modes on every green element.
+**Glow gotcha:** the soft blue glow (hero, active lanes) is an *additive* light bloom on dark mode. On **light mode a glow is invisible** — replace it there with a soft blue tint fill + a subtle drop shadow, never an additive bloom. Test both modes on every blue element.
 
 ---
 
@@ -41,7 +41,7 @@ Define the accent per theme — green must stay legible on white:
 
 Pull specific, concrete elements — do not clone whole layouts.
 
-- **Hero** — from *Oliviera*: centered two-tone editorial headline (off-white/ink + muted-gray in one clause), huge whitespace, one focal visual. From *Layrinth*: a single soft green glow behind the focal visual (dark mode only). The focal visual is the §3a Council demo, **not** a static screenshot and **not** an abstract orb.
+- **Hero** — from *Oliviera*: centered two-tone editorial headline (off-white/ink + muted-gray in one clause), huge whitespace, one focal visual. From *Layrinth*: a single soft blue glow behind the focal visual (dark mode only). The focal visual is the §3a Council demo, **not** a static screenshot and **not** an abstract orb.
 - **"Every model, one place" section** — from *Oliviera image 1 (right)*: the isometric grid of integration tiles with one lit center tile. Map the outer tiles to model providers (OpenAI, Anthropic, Google, Mistral, local/Ollama, etc.) and the **center tile = the ChatUI mark**. Animate per §4a.
 - **Model Council section** — from *Layrinth*: the code-editor / streaming-panel mockups. From *Oliviera*: editorial calm and restraint around it. This is the §3b scroll-scrub.
 - **Deep Research section** — from *Layrinth*: alternating left/right feature rows with short checklist bullets and a process visual. Add the §4b path-draw.
@@ -57,7 +57,7 @@ Pull specific, concrete elements — do not clone whole layouts.
 A **canned, deterministic** mini-demo (no live API calls — script the tokens in `content.ts`). Sequence over ~3.5s:
 1. A prompt appears (typed-in effect) in a single input bubble.
 2. 4 model chips (mono font, e.g. `claude-opus-4-8`, `gpt-…`, `gemini-…`, `local`) appear and each streams 2–3 canned lines in parallel. Each chip glows `--live` while streaming.
-3. The four panels collapse into one centered **chair** card that assembles the synthesized answer. Green fades to `--ink` as it "finishes" (= done, no longer live).
+3. The four panels collapse into one centered **chair** card that assembles the synthesized answer. Blue fades to `--ink` as it "finishes" (= done, no longer live).
 4. Rests on the final state. Do **not** loop. Offer a small "replay" control; replay also fires if the user scrolls away and back.
 - **Reduced motion / no-JS:** render the final resting state immediately (prompt → four faded panels → synthesis card). No typing, no streaming.
 
@@ -72,14 +72,14 @@ p 0.15–0.45   Prompt splits into 4 lanes that slide apart
               header and begins streaming canned tokens.
               Active lanes pulse --live.                    caption: "Every model answers at once."
 p 0.45–0.70   Lanes finish on a slight stagger; each lane's
-              green settles to steady as it completes.
+              blue settles to steady as it completes.
 p 0.70–1.00   The 4 lanes converge inward and collapse into
               one centered "chair" synthesis card that
-              assembles the final answer. Green → --ink.    caption: "One neutral answer, synthesized."
+              assembles the final answer. Blue → --ink.    caption: "One neutral answer, synthesized."
 ```
 
 - **End state = reduced-motion static state:** the final composition (prompt at top, four faded lanes behind, synthesis card in front) rendered statically and legibly, with the three captions shown as plain labels. Someone with motion disabled must still understand "many models → one answer" from the static frame.
-- Keep it **monochrome except for the live-green pulse.** No rainbow per-model colors.
+- Keep it **monochrome except for the live-blue pulse.** No rainbow per-model colors.
 
 ---
 
@@ -120,8 +120,8 @@ Nothing else on the page animates on enter.
 
 The current version reads templated. Change:
 - **Remove the 01/02/03/04 numbering.** These four points are parallel, not a sequence — numbers imply steps that don't exist. Numbering is only allowed for a real ordered process.
-- **Remove the green underline/eyebrow above each heading.** An accent line above every title is a default tell.
-- Keep the copy — it's specific and strong (no telemetry, offline, ZDR, open-source-verifiable). Lay it out as a calm 2×2 separated by `--hairline` dividers, headings in `--ink`, body in `--muted`. Green appears only if a word is genuinely a live/active state — otherwise no green here at all.
+- **Remove the blue underline/eyebrow above each heading.** An accent line above every title is a default tell.
+- Keep the copy — it's specific and strong (no telemetry, offline, ZDR, open-source-verifiable). Lay it out as a calm 2×2 separated by `--hairline` dividers, headings in `--ink`, body in `--muted`. Blue appears only if a word is genuinely a live/active state — otherwise no blue here at all.
 - Must look intentional in **both** light and dark mode.
 
 ---
@@ -142,7 +142,7 @@ Nav → Hero (§3a) → Every-model grid (§4a) → Model Council explainer (§3
 - **Both themes** (light + dark) fully supported for every new element and animation.
 - Reuse existing **shadcn/ui** components; match project conventions.
 - Respect **`PLAN.md` G1–G7** and **`BUILD-ORDER.md`** phasing; flag anything out-of-phase in the diff instead of proceeding.
-- A11y floor: AA contrast (green-on-white especially), visible focus, reduced-motion, responsive to mobile.
+- A11y floor: AA contrast (blue-on-white especially), visible focus, reduced-motion, responsive to mobile.
 - Download CTA points at a **published** GitHub release `.dmg` (release must be out of Draft).
 
 > Note (added when this was turned into a backlog): there is no `BUILD-ORDER.md` in this
@@ -167,7 +167,7 @@ Nav → Hero (§3a) → Every-model grid (§4a) → Model Council explainer (§3
 - Don't add entrance animations or hover-lifts to any section outside §3–§4.
 - Don't clone Layrinth's green-on-everything or glassmorphism.
 - Don't fabricate stats, logos, testimonials, or screenshots.
-- Don't use per-model rainbow colors — monochrome + one green.
+- Don't use per-model rainbow colors — monochrome + one blue.
 - Don't hardcode copy or asset paths.
 - Don't number parallel (non-sequential) content.
 

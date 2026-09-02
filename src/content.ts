@@ -6,33 +6,65 @@ type Segment = { text: string; tone: Tone };
 export const content = {
   nav: {
     links: [
-      { label: "Models", href: "#models" },
       { label: "How it works", href: "#council" },
+      { label: "Models", href: "#models" },
       { label: "Privacy", href: "#privacy" },
     ],
     cta: { label: "Download", href: "#download" },
   },
 
-  // ── Hero (§3a: scripted Council demo is the focal visual, added in M4) ──
+  // ── Hero: product identity naming BOTH features, not one feature's mechanic ──
   hero: {
-    // Small kicker label above the headline (art-direction pass) — not new claim
-    // copy, just surfaces the feature's own name, already used verbatim in
-    // council.sub below ("Model Council sends your prompt...").
-    eyebrow: "Model Council",
     headline: [
-      { text: "Ask every model at once. ", tone: "ink" },
-      { text: "Get one answer you can trust.", tone: "muted" },
+      { text: "One app, every model, ", tone: "ink" },
+      { text: "and an agent that thinks for itself.", tone: "muted" },
     ] as Segment[],
     sub:
-      `${APP_NAME} sends your prompt to every AI model you use at once, then a ` +
-      `neutral model combines their answers into one. Free, open source, and for ` +
-      `most people cheaper than a single subscription.`,
+      `${APP_NAME} asks every model you use at once for one answer you can trust — ` +
+      `or hands a harder question to an agent that researches on its own and comes ` +
+      `back with sources. Free, open source, private by default.`,
     // Scrolls to the download section, which does real per-OS asset detection —
     // the hero can't know the visitor's OS before that, so it doesn't claim one.
     primary: { label: "Download", href: "#download" },
     secondary: { label: "See how it works", href: "#council" },
     replayLabel: "Replay",
+    // Hero diagram: the fan-out/converge flow (you -> models -> chair -> answer).
+    // Plain-word stage captions so the shape is legible without reading the headline.
+    diagram: {
+      you: "you",
+      chair: "chair",
+      answer: "answer",
+      captions: ["you ask once", "every model answers", "a neutral chair merges", "one answer"],
+    },
   },
+
+  // ── App preview strip (real product screenshots, right after the hero) ──
+  appPreview: {
+    shots: [
+      { src: "screenshots/app-chat.png", alt: `${APP_NAME} chat view with the model prompt bar` },
+      { src: "screenshots/app-settings-skills.png", alt: `${APP_NAME} settings, Skills tab` },
+      { src: "screenshots/app-settings-general.png", alt: `${APP_NAME} settings, General tab` },
+    ],
+  },
+
+  // ── Three pillars: the whole product in one glance, right after the proof
+  // screenshots. One-line versions of the full value.points / privacy.points
+  // detail kept further down the page — this is the skim version, not a
+  // replacement for it.
+  pillars: [
+    {
+      title: "Every model, in one place",
+      body: "OpenAI, Anthropic, Google, local models, and more — switch freely, or ask them all at once.",
+    },
+    {
+      title: "Free, pay only for what you use",
+      body: "No subscription. Bring your own provider key and pay per word, same as always.",
+    },
+    {
+      title: "Private by design",
+      body: "No account, no cloud, no telemetry — everything happens on your device.",
+    },
+  ],
 
   // ── Canned Council demo script (hero §3a + scroll explainer §3b) ────────
   // CANNED/deterministic — no live API calls. Model IDs are placeholders from the
@@ -134,6 +166,11 @@ export const content = {
   // ── Deep Research (§4b: path-draw, built in M5) ─────────────────────────
   research: {
     id: "research",
+    // Threads the same session as the Council section above: that debate ended
+    // on "use Turborepo or Nx" — Research picks up exactly there, and the
+    // question is deliberately comparative (not a how-to) so the payoff is
+    // reconciling several sources, not just fetching one answer.
+    connective: "Later that day, a related question comes up:",
     headline: [
       { text: "Research that ", tone: "ink" },
       { text: "runs itself.", tone: "muted" },
@@ -142,13 +179,31 @@ export const content = {
       "Give it a question. Deep Research plans the work, searches, reads, and comes " +
       "back with a sourced answer — an agentic loop that runs on any model you've " +
       "connected, with no extra API keys.",
-    bullets: [
-      "Plans its own steps",
-      "Searches and reads sources",
-      "Cites what it used",
-      "Runs on any connected model",
-    ],
+    citation: {
+      question: "Turborepo vs Nx for a 2-person monorepo in 2026 — which has better remote caching and CI story?",
+      sources: [
+        {
+          domain: "turborepo.com",
+          note: "Remote Caching docs — shared cache skips re-running unchanged tasks across every machine and CI run.",
+        },
+        {
+          domain: "nx.dev",
+          note: "Nx Cloud docs — distributed task execution plus an affected-graph analysis built for larger, multi-team repos.",
+        },
+        {
+          domain: "github.com/vercel/turborepo",
+          note: "Community discussion — Turborepo's setup is simpler; Nx's extra dependency-graph tooling only pays off past ~10 packages.",
+        },
+      ],
+      verdict:
+        "For a two-person team, Turborepo wins on simplicity and remote caching alone — revisit Nx only if the monorepo grows past ~10 packages.",
+    },
     steps: ["Plan", "Search", "Read", "Compile", "Answer"],
+    // The loop is the real shape (search -> read -> refine, repeated), unlike
+    // Council's one-shot fan-out. Plain-word label on the return arrow, plus a
+    // stage caption row under the three visual clusters (single node / loop / payoff).
+    loopLabel: "repeats until it has enough",
+    flowCaptions: ["plans the steps", "searches & reads — on repeat", "cited answer"],
     demo: {
       src: "deep-research-demo.mp4",
       poster: "deep-research-poster.jpg",
@@ -233,21 +288,12 @@ export const content = {
     ],
   },
 
-  // ── Real stats only ──────────────────────────────────────────────────────
-  // The motion spec's "8+ providers" and "MIT license" are unconfirmed — left out
-  // rather than shipped as guesses (PLAN.md G6: no fabricated assets). Only the two
-  // claims that are self-evidently true from the app's own architecture are kept.
-  stats: [
-    { value: "100%", label: "On your device" },
-    { value: "0", label: "Servers" },
-  ],
-
   // ── Download ─────────────────────────────────────────────────────────────
   download: {
     id: "download",
     headline: [
-      { text: "Bring the whole council ", tone: "ink" },
-      { text: "to your desktop.", tone: "muted" },
+      { text: "Every model, ", tone: "ink" },
+      { text: "one download away.", tone: "muted" },
     ] as Segment[],
     sub: "Free and open source. Your models, your machine.",
   },
