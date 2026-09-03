@@ -39,11 +39,13 @@ export const content = {
   },
 
   // ── App preview strip (real product screenshots, right after the hero) ──
+  // width/height are each screenshot's real pixel size, used to size the
+  // slider cards to their native aspect ratio (no cropping, no distortion).
   appPreview: {
     shots: [
-      { src: "screenshots/app-chat.png", alt: `${APP_NAME} chat view with the model prompt bar` },
-      { src: "screenshots/app-settings-skills.png", alt: `${APP_NAME} settings, Skills tab` },
-      { src: "screenshots/app-settings-general.png", alt: `${APP_NAME} settings, General tab` },
+      { src: "screenshots/app-chat.png", alt: `${APP_NAME} chat view with the model prompt bar`, width: 1270, height: 798 },
+      { src: "screenshots/app-settings-skills.png", alt: `${APP_NAME} settings, Skills tab`, width: 1270, height: 906 },
+      { src: "screenshots/app-settings-general.png", alt: `${APP_NAME} settings, General tab`, width: 1282, height: 798 },
     ],
   },
 
@@ -157,11 +159,13 @@ export const content = {
       "One neutral answer, synthesized.",
     ],
     demo: {
-      // Static, cropped frame — not the ProductVideo loop: the source recording's
-      // full window is mostly empty space below the prompt/chairman line, which
-      // read as broken at full size. Cropped to the populated top strip only.
-      poster: "screenshots/council-moment.jpg",
-      alt: "Chat UI running Model Council: a prompt sent, with the chair model assessing the question.",
+      // Real recording: idle -> Panel Setup config -> streaming response ->
+      // structured Discussion Brief. That progression is the reason this is
+      // video, not a static frame — a single frame can only ever show one of
+      // those states, never the sequence.
+      src: "model-council-demo.mp4",
+      poster: "model-council-poster.jpg",
+      alt: "Screen recording of Model Council running in the app: panel setup, a streaming response, then a structured discussion brief.",
     },
   },
 
@@ -207,8 +211,13 @@ export const content = {
     loopLabel: "repeats until it has enough",
     flowCaptions: ["plans the steps", "searches & reads — on repeat", "cited answer"],
     demo: {
+      // Real recording: idle -> a live-growing list of "Researched: ..." log
+      // entries (the loop actually iterating) -> a structured Research Report
+      // with cited sources. The accumulation IS the mechanic being sold here —
+      // a static frame can show the report but never the iterating that earns it.
+      src: "deep-research-demo.mp4",
       poster: "deep-research-poster.jpg",
-      alt: "Chat UI running Deep Research: the agent assessing a research question before it starts searching.",
+      alt: "Screen recording of Deep Research running in the app: research steps accumulating, then a cited research report.",
     },
   },
 
