@@ -5,22 +5,39 @@ import { content } from "@/content"
 import { cn } from "@/lib/utils"
 import { withBase } from "@/lib/url"
 
+function useReducedMotion() {
+  const [reduced, setReduced] = useState(
+    () => typeof window !== "undefined" && window.matchMedia("(prefers-reduced-motion: reduce)").matches
+  )
+  useEffect(() => {
+    const query = window.matchMedia("(prefers-reduced-motion: reduce)")
+    const onChange = (event: MediaQueryListEvent) => setReduced(event.matches)
+    query.addEventListener("change", onChange)
+    return () => query.removeEventListener("change", onChange)
+  }, [])
+  return reduced
+}
+
 // Real product screenshots, right after the hero — ONE large, legible shot
-// fills the whole strip; no sliver of the next one visible. Drag/swipe only,
-// no arrows, no autoplay: the user sets the pace. Each card is full track
-// width so nothing else is ever in view; height follows from the
-// screenshot's own aspect ratio, so nothing is cropped or distorted.
+// fills the whole strip; no sliver of the next one visible. Drag/swipe is the
+// primary control; small prev/next arrows are a secondary, optional aid (not
+// the main way to move) alongside a non-interactive dot indicator. No
+// autoplay — the user always sets the pace.
 //
-// No JS-driven or auto-triggered motion exists here (no autoplay, no
-// scrollIntoView), so there's nothing for prefers-reduced-motion to disable —
-// scroll-snap on user-driven drag/swipe isn't the kind of motion that setting
-// controls.
+// `items-start` on the track matters: flex's default align-items:stretch
+// would force every card to the height of the TALLEST screenshot, and
+// object-cover would then zoom+crop the shorter ones to fill that height —
+// which chopped off their own sidebar text and looked like a neighboring
+// screenshot bleeding through. items-start lets each card keep its own
+// aspect-ratio-derived height instead.
 export function AppPreview() {
   const trackRef = useRef<HTMLDivElement>(null)
   const itemRefs = useRef<(HTMLDivElement | null)[]>([])
   const drag = useRef<{ startX: number; startScrollLeft: number } | null>(null)
   const [active, setActive] = useState(0)
   const rafPending = useRef(false)
+  const reducedMotion = useReducedMotion()
+  const count = content.appPreview.shots.length
 
   const onPointerDown = (e: React.PointerEvent<HTMLDivElement>) => {
     if (e.pointerType !== "mouse") return // touch/pen: let native swipe scrolling handle it
@@ -70,6 +87,13 @@ export function AppPreview() {
     return () => track.removeEventListener("scroll", onScroll)
   }, [])
 
+  const goTo = (index: number) => {
+    const track = trackRef.current
+    const target = itemRefs.current[index]
+    if (!track || !target) return
+    track.scrollTo({ left: target.offsetLeft, behavior: reducedMotion ? "auto" : "smooth" })
+  }
+
   return (
     <section className="py-10 sm:py-14">
       <Container>
@@ -79,7 +103,7 @@ export function AppPreview() {
           onPointerMove={onPointerMove}
           onPointerUp={endDrag}
           onPointerLeave={endDrag}
-          className="flex snap-x snap-mandatory overflow-x-auto pb-1 cursor-grab active:cursor-grabbing [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden"
+          className="flex snap-x snap-mandatory items-start overflow-x-auto pb-1 cursor-grab active:cursor-grabbing [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden"
         >
           {content.appPreview.shots.map((shot, i) => (
             <div
@@ -101,13 +125,39 @@ export function AppPreview() {
           ))}
         </div>
 
-        <div className="mt-4 flex justify-center gap-2" aria-hidden="true">
-          {content.appPreview.shots.map((shot, i) => (
-            <span
-              key={shot.src}
-              className={cn("h-1.5 w-1.5 rounded-full", i === active ? "bg-foreground" : "bg-border")}
-            />
-          ))}
+        <div className="mt-4 flex items-center justify-center gap-4">
+          <button
+            type="button"
+            aria-label="Previous screenshot"
+            disabled={active === 0}
+            onClick={() => goTo(active - 1)}
+            className="flex size-7 items-center justify-center rounded-full border border-border/60 text-muted-foreground transition-colors hover:text-foreground disabled:opacity-30"
+          >
+            <svg width="14" height="14" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+              <path d="M10 3L5 8L10 13" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+            </svg>
+          </button>
+
+          <div className="flex gap-2" aria-hidden="true">
+            {content.appPreview.shots.map((shot, i) => (
+              <span
+                key={shot.src}
+                className={cn("h-1.5 w-1.5 rounded-full", i === active ? "bg-foreground" : "bg-border")}
+              />
+            ))}
+          </div>
+
+          <button
+            type="button"
+            aria-label="Next screenshot"
+            disabled={active === count - 1}
+            onClick={() => goTo(active + 1)}
+            className="flex size-7 items-center justify-center rounded-full border border-border/60 text-muted-foreground transition-colors hover:text-foreground disabled:opacity-30"
+          >
+            <svg width="14" height="14" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+              <path d="M6 3L11 8L6 13" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+            </svg>
+          </button>
         </div>
       </Container>
     </section>
