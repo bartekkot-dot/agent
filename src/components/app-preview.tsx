@@ -5,12 +5,11 @@ import { content } from "@/content"
 import { cn } from "@/lib/utils"
 import { withBase } from "@/lib/url"
 
-// Real product screenshots, right after the hero — ONE large, legible shot in
-// view at a time (not several squeezed into a row), with the next one peeking
-// at the edge. Drag/swipe only, no arrows, no autoplay: the user sets the pace.
-// Each card is sized to a fixed share of the strip's width (not height), so it
-// dominates the view; height follows from the screenshot's own aspect ratio,
-// so nothing is cropped or distorted.
+// Real product screenshots, right after the hero — ONE large, legible shot
+// fills the whole strip; no sliver of the next one visible. Drag/swipe only,
+// no arrows, no autoplay: the user sets the pace. Each card is full track
+// width so nothing else is ever in view; height follows from the
+// screenshot's own aspect ratio, so nothing is cropped or distorted.
 //
 // No JS-driven or auto-triggered motion exists here (no autoplay, no
 // scrollIntoView), so there's nothing for prefers-reduced-motion to disable —
@@ -80,7 +79,7 @@ export function AppPreview() {
           onPointerMove={onPointerMove}
           onPointerUp={endDrag}
           onPointerLeave={endDrag}
-          className="flex snap-x snap-mandatory gap-4 overflow-x-auto pb-1 cursor-grab active:cursor-grabbing [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden"
+          className="flex snap-x snap-mandatory overflow-x-auto pb-1 cursor-grab active:cursor-grabbing [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden"
         >
           {content.appPreview.shots.map((shot, i) => (
             <div
@@ -88,7 +87,7 @@ export function AppPreview() {
               ref={(el) => {
                 itemRefs.current[i] = el
               }}
-              className="w-[86%] shrink-0 snap-start overflow-hidden rounded-xl border border-border/60 bg-card shadow-[0_30px_70px_-30px_rgba(0,0,0,0.55)]"
+              className="w-full shrink-0 snap-start overflow-hidden rounded-xl border border-border/60 bg-card shadow-[0_30px_70px_-30px_rgba(0,0,0,0.55)]"
               style={{ aspectRatio: `${shot.width} / ${shot.height}` }}
             >
               <img
