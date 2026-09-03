@@ -39,11 +39,13 @@ export const content = {
   },
 
   // ── App preview strip (real product screenshots, right after the hero) ──
+  // width/height are each screenshot's real pixel size, used to size the
+  // slider cards to their native aspect ratio (no cropping, no distortion).
   appPreview: {
     shots: [
-      { src: "screenshots/app-chat.png", alt: `${APP_NAME} chat view with the model prompt bar` },
-      { src: "screenshots/app-settings-skills.png", alt: `${APP_NAME} settings, Skills tab` },
-      { src: "screenshots/app-settings-general.png", alt: `${APP_NAME} settings, General tab` },
+      { src: "screenshots/app-chat.png", alt: `${APP_NAME} chat view with the model prompt bar`, width: 1270, height: 798 },
+      { src: "screenshots/app-settings-skills.png", alt: `${APP_NAME} settings, Skills tab`, width: 1270, height: 906 },
+      { src: "screenshots/app-settings-general.png", alt: `${APP_NAME} settings, General tab`, width: 1282, height: 798 },
     ],
   },
 
