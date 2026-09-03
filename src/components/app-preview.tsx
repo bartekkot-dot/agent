@@ -1,15 +1,16 @@
-import { useRef } from "react"
+import { useEffect, useRef, useState } from "react"
 
 import { Container } from "@/components/container"
 import { content } from "@/content"
+import { cn } from "@/lib/utils"
 import { withBase } from "@/lib/url"
 
-// Real product screenshots, right after the hero — a compact, horizontally
-// scrollable band instead of three stacked full-width shots (that ate ~1900px
-// of vertical space). Drag/swipe only, no arrows, no autoplay: the user sets
-// the pace. Cards are sized to a fixed height with each screenshot's own
-// aspect ratio, so nothing is cropped or distorted, and the next card always
-// peeks at the edge as the scroll affordance.
+// Real product screenshots, right after the hero — ONE large, legible shot in
+// view at a time (not several squeezed into a row), with the next one peeking
+// at the edge. Drag/swipe only, no arrows, no autoplay: the user sets the pace.
+// Each card is sized to a fixed share of the strip's width (not height), so it
+// dominates the view; height follows from the screenshot's own aspect ratio,
+// so nothing is cropped or distorted.
 //
 // No JS-driven or auto-triggered motion exists here (no autoplay, no
 // scrollIntoView), so there's nothing for prefers-reduced-motion to disable —
@@ -17,7 +18,10 @@ import { withBase } from "@/lib/url"
 // controls.
 export function AppPreview() {
   const trackRef = useRef<HTMLDivElement>(null)
+  const itemRefs = useRef<(HTMLDivElement | null)[]>([])
   const drag = useRef<{ startX: number; startScrollLeft: number } | null>(null)
+  const [active, setActive] = useState(0)
+  const rafPending = useRef(false)
 
   const onPointerDown = (e: React.PointerEvent<HTMLDivElement>) => {
     if (e.pointerType !== "mouse") return // touch/pen: let native swipe scrolling handle it
@@ -37,6 +41,36 @@ export function AppPreview() {
     drag.current = null
   }
 
+  // Pure status indicator, not a control — tracks which card is nearest the
+  // scroll position so the dots below can show progress while dragging/swiping.
+  const onScroll = () => {
+    if (rafPending.current) return
+    rafPending.current = true
+    requestAnimationFrame(() => {
+      rafPending.current = false
+      const track = trackRef.current
+      if (!track) return
+      let closest = 0
+      let closestDist = Infinity
+      itemRefs.current.forEach((el, i) => {
+        if (!el) return
+        const dist = Math.abs(el.offsetLeft - track.scrollLeft)
+        if (dist < closestDist) {
+          closestDist = dist
+          closest = i
+        }
+      })
+      setActive(closest)
+    })
+  }
+
+  useEffect(() => {
+    const track = trackRef.current
+    if (!track) return
+    track.addEventListener("scroll", onScroll, { passive: true })
+    return () => track.removeEventListener("scroll", onScroll)
+  }, [])
+
   return (
     <section className="py-10 sm:py-14">
       <Container>
@@ -51,8 +85,11 @@ export function AppPreview() {
           {content.appPreview.shots.map((shot, i) => (
             <div
               key={shot.src}
-              className="shrink-0 snap-start overflow-hidden rounded-xl border border-border/60 bg-card shadow-[0_30px_70px_-30px_rgba(0,0,0,0.55)]"
-              style={{ height: "min(70vw, 20rem)", aspectRatio: `${shot.width} / ${shot.height}` }}
+              ref={(el) => {
+                itemRefs.current[i] = el
+              }}
+              className="w-[86%] shrink-0 snap-start overflow-hidden rounded-xl border border-border/60 bg-card shadow-[0_30px_70px_-30px_rgba(0,0,0,0.55)]"
+              style={{ aspectRatio: `${shot.width} / ${shot.height}` }}
             >
               <img
                 src={withBase(shot.src)}
@@ -62,6 +99,15 @@ export function AppPreview() {
                 className="block h-full w-full object-cover select-none"
               />
             </div>
+          ))}
+        </div>
+
+        <div className="mt-4 flex justify-center gap-2" aria-hidden="true">
+          {content.appPreview.shots.map((shot, i) => (
+            <span
+              key={shot.src}
+              className={cn("h-1.5 w-1.5 rounded-full", i === active ? "bg-foreground" : "bg-border")}
+            />
           ))}
         </div>
       </Container>
