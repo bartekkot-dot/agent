@@ -10,17 +10,6 @@ export function SiteHeader() {
         <a href="#top" className="text-[13px] font-medium tracking-tight text-foreground">
           {APP_NAME}
         </a>
-        <nav className="hidden items-center gap-6 sm:flex">
-          {content.nav.links.map((link) => (
-            <a
-              key={link.href}
-              href={link.href}
-              className="text-sm text-muted-foreground transition-colors hover:text-foreground"
-            >
-              {link.label}
-            </a>
-          ))}
-        </nav>
         <div className="flex items-center gap-2">
           <Button asChild size="sm" className="hidden rounded-full bg-brand px-4 text-brand-foreground hover:bg-brand/90 sm:inline-flex">
             <a href={content.nav.cta.href}>{content.nav.cta.label}</a>

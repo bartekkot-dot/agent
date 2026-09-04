@@ -4,20 +4,21 @@ type Tone = "ink" | "muted";
 type Segment = { text: string; tone: Tone };
 
 export const content = {
+  // Section links removed: short single-page site, visitors just scroll.
   nav: {
-    links: [
-      { label: "How it works", href: "#council" },
-      { label: "Models", href: "#models" },
-      { label: "Privacy", href: "#privacy" },
-    ],
     cta: { label: "Download", href: "#download" },
   },
 
   // ── Hero: product identity naming BOTH features, not one feature's mechanic ──
   hero: {
+    // Short by design (was a 4-line headline) — the sub-paragraph right below
+    // still carries the every-model / agent / free / private detail in full.
+    // "Every model, one app." was the default, but it echoes the Providers
+    // section's own heading ("Every model, in one place.") too closely for a
+    // page this short, so this uses the given fallback instead.
     headline: [
-      { text: "One app, every model, ", tone: "ink" },
-      { text: "and an agent that thinks for itself.", tone: "muted" },
+      { text: "One app. Every AI. ", tone: "ink" },
+      { text: "Private.", tone: "muted" },
     ] as Segment[],
     sub:
       `${APP_NAME} asks every model you use at once for one answer you can trust — ` +
@@ -218,6 +219,32 @@ export const content = {
       src: "deep-research-demo.mp4",
       poster: "deep-research-poster.jpg",
       alt: "Screen recording of Deep Research running in the app: research steps accumulating, then a cited research report.",
+    },
+  },
+
+  // ── The normal agent — real flow: you -> agent reasons + calls tools (may
+  // repeat) -> one answer. Grounded in the actual app: OpenCode-backed Agent
+  // mode streams reasoning + tool-call parts (pending/running/completed) into
+  // one message before a final text answer — a genuine tool-use loop, distinct
+  // from Council's parallel fan-out and Research's search/read ping-pong.
+  // New section, placed after Research and before Value: groups the three
+  // feature showcases (Council, Research, this) before the whole-product
+  // sections (Value/Providers/Privacy) that follow.
+  agent: {
+    id: "agent",
+    headline: [
+      { text: "One agent, ", tone: "ink" },
+      { text: "real tools.", tone: "muted" },
+    ] as Segment[],
+    sub:
+      "For everyday tasks, one agent reasons through your request and calls the tools " +
+      "it needs — reading files, running commands — looping as many times as it takes, " +
+      "so you always see what it did before it answers.",
+    diagram: {
+      you: "you",
+      agent: "agent",
+      answer: "answer",
+      captions: ["you ask", "reasons & uses tools — on repeat", "one answer"],
     },
   },
 

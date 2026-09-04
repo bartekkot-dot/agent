@@ -217,86 +217,557 @@
   transform: translate(-50%, -50%) rotate(45deg);
 }
 
-/* Model Council diagram: draws in once, then holds — a "Replay" button restarts it. */
+/* Hero Model Council diagram: continuous loop (see hero-constellation.tsx).
+   One shared 4.8s cycle, delay 0 on every rule — each keyframe's own percentage
+   stops encode its place directly on that shared timeline (rather than using
+   animation-delay per element), so every element's "hidden/reset" window lands
+   on the same real-time instant without needing to reason about phase-shift
+   math. Order: stage1 (you->models) draws, stage2 (models->chair) converges,
+   stage3 (chair->answer) draws, the answer pops in as the payoff, everything
+   holds, then retracts together and loops. Guarded by the same media query as
+   every other looping animation on the page. */
 @media (prefers-reduced-motion: no-preference) {
-  .council-node-animate {
-    transform-box: fill-box;
-    transform-origin: center;
-    animation: council-node-in 0.5s ease-out both;
+  .hero-flow-stage1,
+  .hero-flow-stage2,
+  .hero-flow-stage3,
+  .hero-node-pulse-you,
+  .hero-node-pulse-model,
+  .hero-node-pulse-chair,
+  .hero-answer-pop {
+    animation-duration: 4.8s;
+    animation-iteration-count: infinite;
+    animation-timing-function: linear;
   }
 
-  .council-line-animate {
-    animation: council-line-draw 0.6s ease-out both;
+  .hero-flow-stage1 {
+    animation-name: hero-flow-stage1;
+  }
+  .hero-flow-stage2 {
+    animation-name: hero-flow-stage2;
+  }
+  .hero-flow-stage3 {
+    animation-name: hero-flow-stage3;
+  }
+  .hero-node-pulse-you {
+    animation-name: hero-node-pulse-you;
+  }
+  .hero-node-pulse-model {
+    animation-name: hero-node-pulse-model;
+  }
+  .hero-node-pulse-chair {
+    animation-name: hero-node-pulse-chair;
+  }
+  .hero-answer-pop {
+    transform-box: fill-box;
+    animation-name: hero-answer-pop;
   }
 }
 
-@keyframes council-node-in {
-  from {
-    opacity: 0;
-    scale: 0.85;
+@keyframes hero-flow-stage1 {
+  0%,
+  90%,
+  100% {
+    stroke-dashoffset: 340;
   }
-  to {
+  14% {
+    stroke-dashoffset: 0;
+  }
+  84% {
+    stroke-dashoffset: 0;
+  }
+}
+
+@keyframes hero-flow-stage2 {
+  0%,
+  14%,
+  90%,
+  100% {
+    stroke-dashoffset: 340;
+  }
+  27.5% {
+    stroke-dashoffset: 0;
+  }
+  84% {
+    stroke-dashoffset: 0;
+  }
+}
+
+@keyframes hero-flow-stage3 {
+  0%,
+  28%,
+  90%,
+  100% {
+    stroke-dashoffset: 110;
+  }
+  38% {
+    stroke-dashoffset: 0;
+  }
+  84% {
+    stroke-dashoffset: 0;
+  }
+}
+
+/* Node "lit" flashes: fill briefly brightens as the flow arrives, then settles
+   back to its resting color — the nodes themselves never disappear. */
+@keyframes hero-node-pulse-you {
+  0%,
+  8%,
+  100% {
+    fill: var(--foreground);
+  }
+  3% {
+    fill: var(--muted-foreground);
+  }
+}
+
+@keyframes hero-node-pulse-model {
+  0%,
+  12%,
+  100% {
+    fill: var(--background);
+  }
+  16% {
+    fill: var(--foreground);
+  }
+  22% {
+    fill: var(--background);
+  }
+}
+
+@keyframes hero-node-pulse-chair {
+  0%,
+  26%,
+  100% {
+    fill: var(--muted-foreground);
+  }
+  30% {
+    fill: var(--foreground);
+  }
+  36% {
+    fill: var(--muted-foreground);
+  }
+}
+
+/* The payoff: doesn't exist until it's earned, appears with a small overshoot
+   "pop", holds, then fades out with the rest of the diagram at reset. */
+@keyframes hero-answer-pop {
+  0%,
+  38%,
+  96%,
+  100% {
+    opacity: 0;
+    scale: 0.5;
+  }
+  42% {
+    opacity: 1;
+    scale: 1.15;
+  }
+  46%,
+  90% {
     opacity: 1;
     scale: 1;
   }
 }
 
-@keyframes council-line-draw {
-  from {
-    stroke-dashoffset: var(--dash-length, 160);
-    opacity: 0;
-  }
-  to {
-    stroke-dashoffset: 0;
-    opacity: 1;
-  }
-}
-
-/* Provider grid "connect": a single outward ripple on first scroll into view, then the
-   tile holds its resting border color (animation-fill-mode: forwards) — the center tile
-   is lit unconditionally in markup, this only touches the outer provider tiles. */
+/* Provider grid "connect": looping now, same family as the flow diagrams
+   (shared 4.8s cycle, prefers-reduced-motion-guarded) but deliberately
+   monochrome — no blue, no connector lines. The hub ripples first (delay 0),
+   then each provider tile pulses outward in sequence via --pulse-delay (a
+   persistent phase offset against the shared duration, same technique the
+   flow diagrams use for their own internal stagger), then everything holds
+   quiet until the next cycle. Per-card pulses need no line geometry, so the
+   grid's mobile reflow needs no special handling — it just works. */
 @media (prefers-reduced-motion: no-preference) {
-  .tile-pulse-animate {
-    animation: tile-pulse 0.7s ease-out both;
+  .hub-ripple-loop,
+  .tile-pulse-loop {
+    animation-duration: 4.8s;
+    animation-iteration-count: infinite;
+    animation-timing-function: linear;
+  }
+
+  .hub-ripple-loop {
+    animation-name: hub-ripple-loop;
+  }
+  .tile-pulse-loop {
+    animation-name: tile-pulse-loop;
     animation-delay: var(--pulse-delay, 0s);
   }
 }
 
-@keyframes tile-pulse {
-  0% {
-    border-color: var(--border);
+@keyframes hub-ripple-loop {
+  0%,
+  4%,
+  100% {
+    box-shadow: 0 0 0 0 transparent;
   }
-  35% {
-    border-color: var(--brand);
+  2% {
+    box-shadow: 0 0 0 8px color-mix(in oklab, var(--foreground) 14%, transparent);
   }
+}
+
+@keyframes tile-pulse-loop {
+  0%,
+  6%,
   100% {
     border-color: var(--border);
   }
+  3% {
+    border-color: var(--brand);
+  }
 }
 
-/* Deep Research path draw: draws in once on scroll into view, each node lights as the
-   line reaches it and holds steady green (no "replay" control — this is a one-shot
-   micro-moment, not a signature diagram like Model Council's). */
+/* Deep Research diagram: continuous loop (see deep-research-diagram.tsx), same
+   family as the hero's loop — one shared cycle, delay 0, each keyframe's own
+   stops encode its place on the timeline. 6.5s cycle (longer than the hero's
+   4.8s: there's more to show — a one-shot plan step, TWO visible passes of
+   search<->read since the repeat is the whole point of this diagram, then
+   compile and the payoff), same linear timing + keyframe-baked overshoots,
+   same ~0.5s unified reset window at the end. */
 @media (prefers-reduced-motion: no-preference) {
-  .research-line-animate {
-    animation: council-line-draw 0.5s ease-out both;
+  .research-loop-plan-search,
+  .research-loop-search-read,
+  .research-loop-back,
+  .research-loop-breakout,
+  .research-loop-payoff-line,
+  .research-loop-pulse-search,
+  .research-loop-pulse-read,
+  .research-loop-pulse-compile,
+  .research-loop-answer-pop {
+    animation-duration: 6.5s;
+    animation-iteration-count: infinite;
+    animation-timing-function: linear;
   }
 
-  .research-node-animate {
-    animation: research-node-lit 0.4s ease-out both;
+  .research-loop-plan-search {
+    animation-name: research-loop-plan-search;
+  }
+  .research-loop-search-read {
+    animation-name: research-loop-search-read;
+  }
+  .research-loop-back {
+    animation-name: research-loop-back;
+  }
+  .research-loop-breakout {
+    animation-name: research-loop-breakout;
+  }
+  .research-loop-payoff-line {
+    animation-name: research-loop-payoff-line;
+  }
+  .research-loop-pulse-search {
+    animation-name: research-loop-pulse-search;
+  }
+  .research-loop-pulse-read {
+    animation-name: research-loop-pulse-read;
+  }
+  .research-loop-pulse-compile {
+    animation-name: research-loop-pulse-compile;
+  }
+  .research-loop-answer-pop {
+    transform-box: fill-box;
+    animation-name: research-loop-answer-pop;
   }
 }
 
-/* Applied to SVG <rect>/<text> pairs, not HTML elements — animates stroke/fill, not
-   border-color/color. */
-@keyframes research-node-lit {
-  from {
-    stroke: currentColor;
-    fill: currentColor;
+@keyframes research-loop-plan-search {
+  0%,
+  100% {
+    stroke-dashoffset: 130;
   }
-  to {
-    stroke: var(--brand);
-    fill: var(--brand);
+  6.9% {
+    stroke-dashoffset: 0;
+  }
+  92.3% {
+    stroke-dashoffset: 0;
+  }
+}
+
+/* Draws twice (passes 1 and 2), with a quick retract between — that visible
+   repeat is what reads as "the loop", not just a label. */
+@keyframes research-loop-search-read {
+  0%,
+  6.9% {
+    stroke-dashoffset: 130;
+  }
+  13.8% {
+    stroke-dashoffset: 0;
+  }
+  20.8% {
+    stroke-dashoffset: 0;
+  }
+  22.3% {
+    stroke-dashoffset: 130;
+  }
+  23.8% {
+    stroke-dashoffset: 130;
+  }
+  30.8% {
+    stroke-dashoffset: 0;
+  }
+  92.3% {
+    stroke-dashoffset: 0;
+  }
+  100% {
+    stroke-dashoffset: 130;
+  }
+}
+
+@keyframes research-loop-back {
+  0%,
+  15.4% {
+    stroke-dashoffset: 170;
+  }
+  20.8% {
+    stroke-dashoffset: 0;
+  }
+  22.3% {
+    stroke-dashoffset: 170;
+  }
+  32.3% {
+    stroke-dashoffset: 170;
+  }
+  37.7% {
+    stroke-dashoffset: 0;
+  }
+  92.3% {
+    stroke-dashoffset: 0;
+  }
+  100% {
+    stroke-dashoffset: 170;
+  }
+}
+
+@keyframes research-loop-breakout {
+  0%,
+  32.3% {
+    stroke-dashoffset: 130;
+  }
+  39.2% {
+    stroke-dashoffset: 0;
+  }
+  92.3% {
+    stroke-dashoffset: 0;
+  }
+  100% {
+    stroke-dashoffset: 130;
+  }
+}
+
+@keyframes research-loop-payoff-line {
+  0%,
+  39.2% {
+    stroke-dashoffset: 100;
+  }
+  44.6% {
+    stroke-dashoffset: 0;
+  }
+  92.3% {
+    stroke-dashoffset: 0;
+  }
+  100% {
+    stroke-dashoffset: 100;
+  }
+}
+
+/* Node "lit" flashes — same technique as the hero's, fill briefly brightens
+   as the flow arrives then settles back; the nodes themselves never disappear. */
+@keyframes research-loop-pulse-search {
+  0%,
+  6%,
+  22.3%,
+  27%,
+  100% {
+    fill: var(--card);
+  }
+  6.9% {
+    fill: var(--foreground);
+  }
+  23.8% {
+    fill: var(--foreground);
+  }
+}
+
+@keyframes research-loop-pulse-read {
+  0%,
+  14%,
+  30%,
+  34.5%,
+  100% {
+    fill: var(--card);
+  }
+  15.4% {
+    fill: var(--foreground);
+  }
+  32.3% {
+    fill: var(--foreground);
+  }
+}
+
+@keyframes research-loop-pulse-compile {
+  0%,
+  38%,
+  43%,
+  100% {
+    fill: var(--card);
+  }
+  39.2% {
+    fill: var(--foreground);
+  }
+}
+
+/* The payoff: doesn't exist until it's earned, appears with a small overshoot
+   "pop", holds, then fades out with the rest of the diagram at reset — same
+   shape as the hero's answer node. */
+@keyframes research-loop-answer-pop {
+  0%,
+  44.6%,
+  96%,
+  100% {
+    opacity: 0;
+    scale: 0.5;
+  }
+  48.5% {
+    opacity: 1;
+    scale: 1.15;
+  }
+  50%,
+  92.3% {
+    opacity: 1;
+    scale: 1;
+  }
+}
+
+/* "Normal agent" diagram: continuous loop (see agent-diagram.tsx), same family
+   as the other two flow diagrams — one shared 5.0s cycle, delay 0, each
+   keyframe's own stops encode its place on the timeline, same linear timing +
+   keyframe-baked overshoots, same ~0.5s unified reset window. Shape is
+   distinct on purpose: a single agent node with a SELF-loop (draws, retracts,
+   redraws once) rather than Research's two-node ping-pong — this is one agent
+   iterating on itself via tool calls, not two stages handing off. */
+@media (prefers-reduced-motion: no-preference) {
+  .agent-loop-you-agent,
+  .agent-loop-self,
+  .agent-loop-answer-line,
+  .agent-loop-pulse-agent,
+  .agent-loop-answer-pop {
+    animation-duration: 5s;
+    animation-iteration-count: infinite;
+    animation-timing-function: linear;
+  }
+
+  .agent-loop-you-agent {
+    animation-name: agent-loop-you-agent;
+  }
+  .agent-loop-self {
+    animation-name: agent-loop-self;
+  }
+  .agent-loop-answer-line {
+    animation-name: agent-loop-answer-line;
+  }
+  .agent-loop-pulse-agent {
+    animation-name: agent-loop-pulse-agent;
+  }
+  .agent-loop-answer-pop {
+    transform-box: fill-box;
+    animation-name: agent-loop-answer-pop;
+  }
+}
+
+@keyframes agent-loop-you-agent {
+  0%,
+  100% {
+    stroke-dashoffset: 220;
+  }
+  8% {
+    stroke-dashoffset: 0;
+  }
+  90% {
+    stroke-dashoffset: 0;
+  }
+}
+
+/* Draws, retracts, and redraws once — the visible repeat that shows the agent
+   is genuinely looping (reasoning -> tool call -> back to reasoning) before
+   it's done, not just pausing. */
+@keyframes agent-loop-self {
+  0%,
+  8% {
+    stroke-dashoffset: 150;
+  }
+  18% {
+    stroke-dashoffset: 0;
+  }
+  20% {
+    stroke-dashoffset: 150;
+  }
+  22% {
+    stroke-dashoffset: 150;
+  }
+  32% {
+    stroke-dashoffset: 0;
+  }
+  90% {
+    stroke-dashoffset: 0;
+  }
+  100% {
+    stroke-dashoffset: 150;
+  }
+}
+
+@keyframes agent-loop-answer-line {
+  0%,
+  34% {
+    stroke-dashoffset: 240;
+  }
+  42% {
+    stroke-dashoffset: 0;
+  }
+  90% {
+    stroke-dashoffset: 0;
+  }
+  100% {
+    stroke-dashoffset: 240;
+  }
+}
+
+/* Three brief flashes: receiving the initial prompt, restarting the loop
+   once, and the final reasoning pass right before it breaks out to answer. */
+@keyframes agent-loop-pulse-agent {
+  0%,
+  9%,
+  11%,
+  21%,
+  23%,
+  33%,
+  36%,
+  100% {
+    fill: var(--card);
+  }
+  10%,
+  22%,
+  34% {
+    fill: var(--foreground);
+  }
+}
+
+/* The payoff: doesn't exist until it's earned, appears with a small overshoot
+   "pop", holds, then fades out with the rest of the diagram at reset — same
+   shape as the other two diagrams' answer nodes. */
+@keyframes agent-loop-answer-pop {
+  0%,
+  42%,
+  96%,
+  100% {
+    opacity: 0;
+    scale: 0.5;
+  }
+  46% {
+    opacity: 1;
+    scale: 1.15;
+  }
+  50%,
+  90% {
+    opacity: 1;
+    scale: 1;
   }
 }
 

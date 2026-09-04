@@ -6,6 +6,14 @@ import { APP_NAME, content } from "@/content"
 import { useInView } from "@/hooks/use-in-view"
 import { cn } from "@/lib/utils"
 
+// Looping monochrome pulse — the hub "sends" and each provider tile ripples
+// outward in sequence, on the same CSS-loop family as the flow diagrams
+// (looping, prefers-reduced-motion-guarded), but deliberately unlike them:
+// no blue, no connector lines. Blue is reserved for a flow diagram's answer
+// payoff; this hub has no answer, so it stays fully grayscale. No explicit
+// line geometry either — a border/glow pulse per card degrades perfectly on
+// mobile's grid reflow for free, where computed connector lines would need
+// runtime measurement and could misalign on resize.
 export function ModelsSection() {
   const { ref, inView } = useInView<HTMLDivElement>(0.3)
   const [hasPlayed, setHasPlayed] = useState(false)
@@ -36,7 +44,10 @@ export function ModelsSection() {
             <div ref={ref} className="grid w-full max-w-md grid-cols-2 gap-3">
               <div
                 key="center"
-                className="col-span-2 flex flex-col items-center justify-center gap-1 rounded-xl border border-brand/40 bg-brand/[0.06] px-4 py-6 text-center"
+                className={cn(
+                  "col-span-2 flex flex-col items-center justify-center gap-1 rounded-xl border border-brand/40 bg-brand/[0.06] px-4 py-6 text-center",
+                  hasPlayed && "hub-ripple-loop"
+                )}
               >
                 <span className="font-heading text-lg font-medium text-brand">{APP_NAME}</span>
                 <span className="text-xs text-muted-foreground">connects to all of them</span>
@@ -46,9 +57,9 @@ export function ModelsSection() {
                   key={provider.name}
                   className={cn(
                     "flex flex-col items-center justify-center gap-1 rounded-xl border border-border/60 px-3 py-5 text-center",
-                    hasPlayed && "tile-pulse-animate"
+                    hasPlayed && "tile-pulse-loop"
                   )}
-                  style={{ "--pulse-delay": `${0.1 + i * 0.08}s` } as CSSProperties}
+                  style={{ "--pulse-delay": `${0.4 + i * 0.08}s` } as CSSProperties}
                 >
                   <span className="text-sm font-medium text-foreground">{provider.name}</span>
                   <span className="text-[11px] text-muted-foreground">
