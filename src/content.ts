@@ -4,20 +4,21 @@ type Tone = "ink" | "muted";
 type Segment = { text: string; tone: Tone };
 
 export const content = {
+  // Section links removed: short single-page site, visitors just scroll.
   nav: {
-    links: [
-      { label: "How it works", href: "#council" },
-      { label: "Models", href: "#models" },
-      { label: "Privacy", href: "#privacy" },
-    ],
     cta: { label: "Download", href: "#download" },
   },
 
   // ── Hero: product identity naming BOTH features, not one feature's mechanic ──
   hero: {
+    // Short by design (was a 4-line headline) — the sub-paragraph right below
+    // still carries the every-model / agent / free / private detail in full.
+    // "Every model, one app." was the default, but it echoes the Providers
+    // section's own heading ("Every model, in one place.") too closely for a
+    // page this short, so this uses the given fallback instead.
     headline: [
-      { text: "One app, every model, ", tone: "ink" },
-      { text: "and an agent that thinks for itself.", tone: "muted" },
+      { text: "One app. Every AI. ", tone: "ink" },
+      { text: "Private.", tone: "muted" },
     ] as Segment[],
     sub:
       `${APP_NAME} asks every model you use at once for one answer you can trust — ` +
