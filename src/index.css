@@ -611,6 +611,141 @@
   }
 }
 
+/* "Normal agent" diagram: continuous loop (see agent-diagram.tsx), same family
+   as the other two flow diagrams — one shared 5.0s cycle, delay 0, each
+   keyframe's own stops encode its place on the timeline, same linear timing +
+   keyframe-baked overshoots, same ~0.5s unified reset window. Shape is
+   distinct on purpose: a single agent node with a SELF-loop (draws, retracts,
+   redraws once) rather than Research's two-node ping-pong — this is one agent
+   iterating on itself via tool calls, not two stages handing off. */
+@media (prefers-reduced-motion: no-preference) {
+  .agent-loop-you-agent,
+  .agent-loop-self,
+  .agent-loop-answer-line,
+  .agent-loop-pulse-agent,
+  .agent-loop-answer-pop {
+    animation-duration: 5s;
+    animation-iteration-count: infinite;
+    animation-timing-function: linear;
+  }
+
+  .agent-loop-you-agent {
+    animation-name: agent-loop-you-agent;
+  }
+  .agent-loop-self {
+    animation-name: agent-loop-self;
+  }
+  .agent-loop-answer-line {
+    animation-name: agent-loop-answer-line;
+  }
+  .agent-loop-pulse-agent {
+    animation-name: agent-loop-pulse-agent;
+  }
+  .agent-loop-answer-pop {
+    transform-box: fill-box;
+    animation-name: agent-loop-answer-pop;
+  }
+}
+
+@keyframes agent-loop-you-agent {
+  0%,
+  100% {
+    stroke-dashoffset: 220;
+  }
+  8% {
+    stroke-dashoffset: 0;
+  }
+  90% {
+    stroke-dashoffset: 0;
+  }
+}
+
+/* Draws, retracts, and redraws once — the visible repeat that shows the agent
+   is genuinely looping (reasoning -> tool call -> back to reasoning) before
+   it's done, not just pausing. */
+@keyframes agent-loop-self {
+  0%,
+  8% {
+    stroke-dashoffset: 150;
+  }
+  18% {
+    stroke-dashoffset: 0;
+  }
+  20% {
+    stroke-dashoffset: 150;
+  }
+  22% {
+    stroke-dashoffset: 150;
+  }
+  32% {
+    stroke-dashoffset: 0;
+  }
+  90% {
+    stroke-dashoffset: 0;
+  }
+  100% {
+    stroke-dashoffset: 150;
+  }
+}
+
+@keyframes agent-loop-answer-line {
+  0%,
+  34% {
+    stroke-dashoffset: 240;
+  }
+  42% {
+    stroke-dashoffset: 0;
+  }
+  90% {
+    stroke-dashoffset: 0;
+  }
+  100% {
+    stroke-dashoffset: 240;
+  }
+}
+
+/* Three brief flashes: receiving the initial prompt, restarting the loop
+   once, and the final reasoning pass right before it breaks out to answer. */
+@keyframes agent-loop-pulse-agent {
+  0%,
+  9%,
+  11%,
+  21%,
+  23%,
+  33%,
+  36%,
+  100% {
+    fill: var(--card);
+  }
+  10%,
+  22%,
+  34% {
+    fill: var(--foreground);
+  }
+}
+
+/* The payoff: doesn't exist until it's earned, appears with a small overshoot
+   "pop", holds, then fades out with the rest of the diagram at reset — same
+   shape as the other two diagrams' answer nodes. */
+@keyframes agent-loop-answer-pop {
+  0%,
+  42%,
+  96%,
+  100% {
+    opacity: 0;
+    scale: 0.5;
+  }
+  46% {
+    opacity: 1;
+    scale: 1.15;
+  }
+  50%,
+  90% {
+    opacity: 1;
+    scale: 1;
+  }
+}
+
 body {
   background-color: var(--color-background);
   color: var(--color-foreground);

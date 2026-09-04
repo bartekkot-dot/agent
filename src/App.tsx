@@ -1,3 +1,4 @@
+import { AgentSection } from "@/components/agent-section"
 import { AppPreview } from "@/components/app-preview"
 import { CouncilSection } from "@/components/council-section"
 import { DownloadSection } from "@/components/download-section"
@@ -25,6 +26,7 @@ function App() {
         <PillarsSection />
         <CouncilSection />
         <ResearchSection />
+        <AgentSection />
         <ValueSection />
         <ModelsSection />
         <PrivacySection />

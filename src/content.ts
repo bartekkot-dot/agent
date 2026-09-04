@@ -222,6 +222,32 @@ export const content = {
     },
   },
 
+  // ── The normal agent — real flow: you -> agent reasons + calls tools (may
+  // repeat) -> one answer. Grounded in the actual app: OpenCode-backed Agent
+  // mode streams reasoning + tool-call parts (pending/running/completed) into
+  // one message before a final text answer — a genuine tool-use loop, distinct
+  // from Council's parallel fan-out and Research's search/read ping-pong.
+  // New section, placed after Research and before Value: groups the three
+  // feature showcases (Council, Research, this) before the whole-product
+  // sections (Value/Providers/Privacy) that follow.
+  agent: {
+    id: "agent",
+    headline: [
+      { text: "One agent, ", tone: "ink" },
+      { text: "real tools.", tone: "muted" },
+    ] as Segment[],
+    sub:
+      "For everyday tasks, one agent reasons through your request and calls the tools " +
+      "it needs — reading files, running commands — looping as many times as it takes, " +
+      "so you always see what it did before it answers.",
+    diagram: {
+      you: "you",
+      agent: "agent",
+      answer: "answer",
+      captions: ["you ask", "reasons & uses tools — on repeat", "one answer"],
+    },
+  },
+
   // ── Private by design (§6: no numbering, no eyebrow, both themes) ───────
   privacy: {
     id: "privacy",
