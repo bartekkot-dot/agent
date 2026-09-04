@@ -217,7 +217,8 @@
   transform: translate(-50%, -50%) rotate(45deg);
 }
 
-/* Hero Model Council diagram: continuous loop (see hero-constellation.tsx).
+/* Model Council diagram: continuous loop (see council-diagram.tsx — moved
+   here from the hero, file/classes renamed to match).
    One shared 4.8s cycle, delay 0 on every rule — each keyframe's own percentage
    stops encode its place directly on that shared timeline (rather than using
    animation-delay per element), so every element's "hidden/reset" window lands
@@ -227,43 +228,43 @@
    holds, then retracts together and loops. Guarded by the same media query as
    every other looping animation on the page. */
 @media (prefers-reduced-motion: no-preference) {
-  .hero-flow-stage1,
-  .hero-flow-stage2,
-  .hero-flow-stage3,
-  .hero-node-pulse-you,
-  .hero-node-pulse-model,
-  .hero-node-pulse-chair,
-  .hero-answer-pop {
+  .council-diagram-stage1,
+  .council-diagram-stage2,
+  .council-diagram-stage3,
+  .council-diagram-pulse-you,
+  .council-diagram-pulse-model,
+  .council-diagram-pulse-chair,
+  .council-diagram-answer-pop {
     animation-duration: 4.8s;
     animation-iteration-count: infinite;
     animation-timing-function: linear;
   }
 
-  .hero-flow-stage1 {
-    animation-name: hero-flow-stage1;
+  .council-diagram-stage1 {
+    animation-name: council-diagram-stage1;
   }
-  .hero-flow-stage2 {
-    animation-name: hero-flow-stage2;
+  .council-diagram-stage2 {
+    animation-name: council-diagram-stage2;
   }
-  .hero-flow-stage3 {
-    animation-name: hero-flow-stage3;
+  .council-diagram-stage3 {
+    animation-name: council-diagram-stage3;
   }
-  .hero-node-pulse-you {
-    animation-name: hero-node-pulse-you;
+  .council-diagram-pulse-you {
+    animation-name: council-diagram-pulse-you;
   }
-  .hero-node-pulse-model {
-    animation-name: hero-node-pulse-model;
+  .council-diagram-pulse-model {
+    animation-name: council-diagram-pulse-model;
   }
-  .hero-node-pulse-chair {
-    animation-name: hero-node-pulse-chair;
+  .council-diagram-pulse-chair {
+    animation-name: council-diagram-pulse-chair;
   }
-  .hero-answer-pop {
+  .council-diagram-answer-pop {
     transform-box: fill-box;
-    animation-name: hero-answer-pop;
+    animation-name: council-diagram-answer-pop;
   }
 }
 
-@keyframes hero-flow-stage1 {
+@keyframes council-diagram-stage1 {
   0%,
   90%,
   100% {
@@ -277,7 +278,7 @@
   }
 }
 
-@keyframes hero-flow-stage2 {
+@keyframes council-diagram-stage2 {
   0%,
   14%,
   90%,
@@ -292,7 +293,7 @@
   }
 }
 
-@keyframes hero-flow-stage3 {
+@keyframes council-diagram-stage3 {
   0%,
   28%,
   90%,
@@ -309,7 +310,7 @@
 
 /* Node "lit" flashes: fill briefly brightens as the flow arrives, then settles
    back to its resting color — the nodes themselves never disappear. */
-@keyframes hero-node-pulse-you {
+@keyframes council-diagram-pulse-you {
   0%,
   8%,
   100% {
@@ -320,7 +321,7 @@
   }
 }
 
-@keyframes hero-node-pulse-model {
+@keyframes council-diagram-pulse-model {
   0%,
   12%,
   100% {
@@ -334,7 +335,7 @@
   }
 }
 
-@keyframes hero-node-pulse-chair {
+@keyframes council-diagram-pulse-chair {
   0%,
   26%,
   100% {
@@ -350,7 +351,7 @@
 
 /* The payoff: doesn't exist until it's earned, appears with a small overshoot
    "pop", holds, then fades out with the rest of the diagram at reset. */
-@keyframes hero-answer-pop {
+@keyframes council-diagram-answer-pop {
   0%,
   38%,
   96%,
@@ -768,6 +769,173 @@
   90% {
     opacity: 1;
     scale: 1;
+  }
+}
+
+/* Hero "every AI" constellation (see hero-every-ai.tsx) — the whole-app visual,
+   distinct from the three flow diagrams: no process to show, just "many
+   models, pick one, or ask them all". 6s cycle, split into 8 even beats (7
+   models + one "all together" beat). Two independent properties instead of
+   one shared keyframe: fill (which model is currently selected) and opacity
+   (all models flashing together) never fight over the same property. Strictly
+   monochrome — no --payoff anywhere in this block; blue starts in the Model
+   Council section, not here. */
+@media (prefers-reduced-motion: no-preference) {
+  .hero-every-ai-selector {
+    animation: hero-every-ai-selector-cycle 6s linear infinite;
+  }
+
+  .hero-every-ai-dot {
+    animation-name: hero-every-ai-select-pulse, hero-every-ai-flash-all;
+    animation-duration: 6s, 6s;
+    animation-iteration-count: infinite, infinite;
+    animation-timing-function: linear, linear;
+    animation-delay: var(--select-delay, 0s), 0s;
+  }
+}
+
+/* Jumps between the 7 models' positions (translated relative to the first
+   model, which the circle's own cx/cy already sit at) — a brief fade in,
+   a hold, a brief fade out, then silently repositions for the next one.
+   Hidden entirely during the final "all together" beat (87.5%-100%). */
+@keyframes hero-every-ai-selector-cycle {
+  0% {
+    opacity: 0;
+    transform: translate(0px, 0px);
+  }
+  0.5% {
+    opacity: 1;
+  }
+  10% {
+    opacity: 1;
+    transform: translate(0px, 0px);
+  }
+  11.5% {
+    opacity: 0;
+    transform: translate(0px, 0px);
+  }
+  12.5% {
+    opacity: 0;
+    transform: translate(160px, -40px);
+  }
+  13% {
+    opacity: 1;
+  }
+  22.5% {
+    opacity: 1;
+    transform: translate(160px, -40px);
+  }
+  24% {
+    opacity: 0;
+    transform: translate(160px, -40px);
+  }
+  25% {
+    opacity: 0;
+    transform: translate(320px, 10px);
+  }
+  25.5% {
+    opacity: 1;
+  }
+  35% {
+    opacity: 1;
+    transform: translate(320px, 10px);
+  }
+  36.5% {
+    opacity: 0;
+    transform: translate(320px, 10px);
+  }
+  37.5% {
+    opacity: 0;
+    transform: translate(460px, -30px);
+  }
+  38% {
+    opacity: 1;
+  }
+  47.5% {
+    opacity: 1;
+    transform: translate(460px, -30px);
+  }
+  49% {
+    opacity: 0;
+    transform: translate(460px, -30px);
+  }
+  50% {
+    opacity: 0;
+    transform: translate(50px, 160px);
+  }
+  50.5% {
+    opacity: 1;
+  }
+  60% {
+    opacity: 1;
+    transform: translate(50px, 160px);
+  }
+  61.5% {
+    opacity: 0;
+    transform: translate(50px, 160px);
+  }
+  62.5% {
+    opacity: 0;
+    transform: translate(240px, 200px);
+  }
+  63% {
+    opacity: 1;
+  }
+  72.5% {
+    opacity: 1;
+    transform: translate(240px, 200px);
+  }
+  74% {
+    opacity: 0;
+    transform: translate(240px, 200px);
+  }
+  75% {
+    opacity: 0;
+    transform: translate(400px, 150px);
+  }
+  75.5% {
+    opacity: 1;
+  }
+  85% {
+    opacity: 1;
+    transform: translate(400px, 150px);
+  }
+  86.5%,
+  100% {
+    opacity: 0;
+    transform: translate(400px, 150px);
+  }
+}
+
+/* Reused per-dot via animation-delay (a persistent phase offset against the
+   shared 6s duration — proven elsewhere on this page), rather than 7 separate
+   keyframes: each dot brightens for the same ~11% window the selector ring
+   spends visiting it. */
+@keyframes hero-every-ai-select-pulse {
+  0%,
+  11%,
+  100% {
+    fill: var(--muted-foreground);
+  }
+  2%,
+  9% {
+    fill: var(--foreground);
+  }
+}
+
+/* All dots, same delay (0) — the "ask them all at once" beat, independent of
+   which one fill is currently selected since it animates opacity, not fill. */
+@keyframes hero-every-ai-flash-all {
+  0%,
+  86%,
+  100% {
+    opacity: 0.55;
+  }
+  91% {
+    opacity: 1;
+  }
+  97% {
+    opacity: 0.6;
   }
 }
 

@@ -1,26 +1,26 @@
 import { Container } from "@/components/container"
+import { CouncilDiagram, ModelMarquee } from "@/components/council-diagram"
 import { CouncilScrub } from "@/components/council-scrub"
 import { ProductVideo } from "@/components/product-video"
 import { content } from "@/content"
 
-// THE signature moment (§3b) — a scroll-pinned explainer, not a scroll-reveal
-// section like the rest of the page. No <Reveal> wrapper: the headline/sub fade
-// in normally, but the scrub below is driven by CouncilScrub's own scroll math.
+// Restructured to: concept intro (headline + sub + the fan-out diagram, two-
+// column like Research/Agent) -> the scroll-pinned scrub (THE signature
+// moment, full-bleed) -> the real-app video (proof). The diagram used to live
+// in the hero; it's Council-specific, so it belongs in this intro rather than
+// standing in for the whole app. It doesn't duplicate the scrub below: the
+// diagram is the abstract mechanism at a glance (no real content, always
+// visible, loops in a few seconds), the scrub is the concrete demonstration
+// (a real prompt, real diverging answers, scroll-driven) — different jobs,
+// same as how Research pairs its own diagram with its own video.
 //
-// Scrub = the wow, placed first so the section leads with it, full-bleed (breaks
-// the Container width — this is the page's one archetype-B "feature moment").
-// Video = proof: the real app running the setup -> stream -> brief progression,
-// which the scrub's stylized fake lane cards never show. Two-column split (text
-// left, framed video right) — not a wide block stacked under the text, which
-// left it stranded in the left ~60% with a large empty gap beside and below it.
+// The video no longer sits paired with text (that's now up in the intro), so
+// it's full width instead of a lone block with dead space beside it — same
+// fix already applied to app-preview.tsx.
 export function CouncilSection() {
   return (
     <section id={content.council.id} className="scroll-mt-12 border-t border-border/40 pb-20 sm:pb-24">
-      <div className="pt-20 sm:pt-24">
-        <CouncilScrub />
-      </div>
-
-      <Container className="relative">
+      <Container className="pt-20 sm:pt-24">
         <div className="grid grid-cols-1 gap-12 sm:grid-cols-2 sm:items-center sm:gap-16">
           <div>
             <h2 className="font-heading text-4xl font-semibold tracking-tight sm:text-5xl">
@@ -36,12 +36,22 @@ export function CouncilSection() {
             <p className="mt-4 text-subhead">{content.council.sub}</p>
           </div>
 
-          <ProductVideo
-            src={content.council.demo.src}
-            poster={content.council.demo.poster}
-            alt={content.council.demo.alt}
-          />
+          <CouncilDiagram />
         </div>
+
+        <ModelMarquee />
+      </Container>
+
+      <div className="mt-16 sm:mt-20">
+        <CouncilScrub />
+      </div>
+
+      <Container className="relative mt-16 sm:mt-20">
+        <ProductVideo
+          src={content.council.demo.src}
+          poster={content.council.demo.poster}
+          alt={content.council.demo.alt}
+        />
       </Container>
     </section>
   )

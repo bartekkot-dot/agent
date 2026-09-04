@@ -29,14 +29,6 @@ export const content = {
     primary: { label: "Download", href: "#download" },
     secondary: { label: "See how it works", href: "#council" },
     replayLabel: "Replay",
-    // Hero diagram: the fan-out/converge flow (you -> models -> chair -> answer).
-    // Plain-word stage captions so the shape is legible without reading the headline.
-    diagram: {
-      you: "you",
-      chair: "chair",
-      answer: "answer",
-      captions: ["you ask once", "every model answers", "a neutral chair merges", "one answer"],
-    },
   },
 
   // ── App preview strip (real product screenshots, right after the hero) ──
@@ -159,6 +151,15 @@ export const content = {
       "Every model answers at once.",
       "One neutral answer, synthesized.",
     ],
+    // Moved here from hero (was content.hero.diagram) along with the diagram
+    // itself — the fan-out/converge flow (you -> models -> chair -> answer).
+    // Plain-word stage captions so the shape is legible without reading the headline.
+    diagram: {
+      you: "you",
+      chair: "chair",
+      answer: "answer",
+      captions: ["you ask once", "every model answers", "a neutral chair merges", "one answer"],
+    },
     demo: {
       // Real recording: idle -> Panel Setup config -> streaming response ->
       // structured Discussion Brief. That progression is the reason this is

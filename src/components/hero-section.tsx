@@ -1,14 +1,14 @@
 import { Container } from "@/components/container"
-import { HeroConstellation, ModelMarquee } from "@/components/hero-constellation"
+import { HeroEveryAI } from "@/components/hero-every-ai"
 import { Button } from "@/components/ui/button"
 import { content } from "@/content"
 import { useInView } from "@/hooks/use-in-view"
 
-// Art-direction pass: the hero's identity moment is the constellation motif
-// (HeroConstellation), not the old chip-grid demo — Council's own scroll-scrub
-// already shows the literal "models answering" sequence in full, so the hero's
-// job is to be the iconic, instantly-recognizable brand mark instead of
-// repeating that function. See hero-constellation.tsx for the motif itself.
+// The hero's job is to represent the WHOLE app, not one feature — it used to
+// show the Model Council fan-out diagram, which was really just one feature's
+// mechanism standing in for the product. That diagram moved to its own
+// section (council-diagram.tsx); the hero now shows a loose constellation of
+// the app's models instead (see hero-every-ai.tsx).
 export function HeroSection() {
   const { ref } = useInView<HTMLElement>(0)
 
@@ -48,10 +48,8 @@ export function HeroSection() {
           </div>
         </div>
 
-        <HeroConstellation />
+        <HeroEveryAI />
       </Container>
-
-      <ModelMarquee />
     </section>
   )
 }

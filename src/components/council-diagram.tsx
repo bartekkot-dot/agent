@@ -7,14 +7,18 @@ import { cn } from "@/lib/utils"
 // single input fans out to every model in parallel, then converges through one
 // "chair" node into one labeled answer. Every stage is plain-word captioned
 // underneath so the flow reads without needing the headline next to it.
-// ViewBox is a 640x440 landscape rect (was a 480x480 square) — the four-stage
-// sequence needs the extra width; see hero-section.tsx for the aspect change.
 //
-// Looping animation: pure CSS keyframes (see index.css's hero-flow-* /
-// hero-node-pulse / hero-answer-pop rules), not framer-motion — an infinite
-// loop is cheaper driven by the compositor than re-running JS-driven motion
-// forever, and it matches deep-research-diagram.tsx's existing CSS-loop
-// convention so the two diagrams read as one family. you/models/chair stay
+// Moved here from the hero (was hero-constellation.tsx / HeroConstellation) —
+// this diagram represents ONE feature (Model Council), so it belongs in that
+// feature's own section, not standing in for the whole app. Renamed file,
+// component, and CSS classes to match (was hero-flow-* / hero-node-pulse-* /
+// hero-answer-pop, now council-diagram-*).
+//
+// Looping animation: pure CSS keyframes (see index.css's council-diagram-* /
+// council-diagram-pulse-* / council-diagram-answer-pop rules), not
+// framer-motion — an infinite loop is cheaper driven by the compositor than
+// re-running JS-driven motion forever, and it matches deep-research-diagram.tsx
+// / agent-diagram.tsx's existing CSS-loop convention. you/models/chair stay
 // permanently visible (the structure); only the connector lines, a brief
 // "lit" fill-flash on each node as the flow arrives, and the answer node
 // itself (which only exists once earned each cycle) actually animate.
@@ -52,9 +56,9 @@ function bezier(from: { x: number; y: number }, to: { x: number; y: number }) {
 const FAN_DASH = 340
 const PAYOFF_DASH = 110
 
-export function HeroConstellation() {
+export function CouncilDiagram() {
   const reducedMotion = useReducedMotion()
-  const { you, chair, answer, captions } = content.hero.diagram
+  const { you, chair, answer, captions } = content.council.diagram
 
   return (
     <div className="relative w-full max-w-[620px]">
@@ -68,7 +72,7 @@ export function HeroConstellation() {
             strokeWidth="1.5"
             fill="none"
             strokeDasharray={reducedMotion ? undefined : FAN_DASH}
-            className={cn(!reducedMotion && "hero-flow-stage1")}
+            className={cn(!reducedMotion && "council-diagram-stage1")}
           />
         ))}
         {/* models -> chair (converge) */}
@@ -80,7 +84,7 @@ export function HeroConstellation() {
             strokeWidth="1.5"
             fill="none"
             strokeDasharray={reducedMotion ? undefined : FAN_DASH}
-            className={cn(!reducedMotion && "hero-flow-stage2")}
+            className={cn(!reducedMotion && "council-diagram-stage2")}
           />
         ))}
         {/* chair -> answer: same neutral line as every other connector — only the
@@ -91,7 +95,7 @@ export function HeroConstellation() {
           strokeWidth="1.5"
           fill="none"
           strokeDasharray={reducedMotion ? undefined : PAYOFF_DASH}
-          className={cn(!reducedMotion && "hero-flow-stage3")}
+          className={cn(!reducedMotion && "council-diagram-stage3")}
         />
 
         {/* you — the constant origin; a brief pulse marks the start of each cycle */}
@@ -101,7 +105,7 @@ export function HeroConstellation() {
             cy={YOU.y}
             r="10"
             fill="var(--foreground)"
-            className={cn(!reducedMotion && "hero-node-pulse-you")}
+            className={cn(!reducedMotion && "council-diagram-pulse-you")}
           />
           <text x={YOU.x} y={YOU.y + 30} textAnchor="middle" fontSize="12" fill="var(--foreground)">
             {you}
@@ -118,7 +122,7 @@ export function HeroConstellation() {
               fill="var(--background)"
               stroke="currentColor"
               strokeWidth="1.5"
-              className={cn(!reducedMotion && "hero-node-pulse-model")}
+              className={cn(!reducedMotion && "council-diagram-pulse-model")}
             />
             <text
               x={m.x}
@@ -141,7 +145,7 @@ export function HeroConstellation() {
             cy={CHAIR.y}
             r="4"
             fill="var(--muted-foreground)"
-            className={cn(!reducedMotion && "hero-node-pulse-chair")}
+            className={cn(!reducedMotion && "council-diagram-pulse-chair")}
           />
           <text x={CHAIR.x} y={CHAIR.y + 34} textAnchor="middle" fontSize="12" fill="var(--muted-foreground)">
             {chair}
@@ -150,7 +154,7 @@ export function HeroConstellation() {
 
         {/* answer — the one payoff node; it's earned each cycle, not permanent,
             so it appears last and fades out with the rest at reset */}
-        <g className={cn(!reducedMotion && "hero-answer-pop")} style={{ transformOrigin: `${ANSWER.x}px ${ANSWER.y}px` }}>
+        <g className={cn(!reducedMotion && "council-diagram-answer-pop")} style={{ transformOrigin: `${ANSWER.x}px ${ANSWER.y}px` }}>
           <circle
             cx={ANSWER.x}
             cy={ANSWER.y}
