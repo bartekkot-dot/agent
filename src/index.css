@@ -369,25 +369,50 @@
   }
 }
 
-/* Provider grid "connect": a single outward ripple on first scroll into view, then the
-   tile holds its resting border color (animation-fill-mode: forwards) — the center tile
-   is lit unconditionally in markup, this only touches the outer provider tiles. */
+/* Provider grid "connect": looping now, same family as the flow diagrams
+   (shared 4.8s cycle, prefers-reduced-motion-guarded) but deliberately
+   monochrome — no blue, no connector lines. The hub ripples first (delay 0),
+   then each provider tile pulses outward in sequence via --pulse-delay (a
+   persistent phase offset against the shared duration, same technique the
+   flow diagrams use for their own internal stagger), then everything holds
+   quiet until the next cycle. Per-card pulses need no line geometry, so the
+   grid's mobile reflow needs no special handling — it just works. */
 @media (prefers-reduced-motion: no-preference) {
-  .tile-pulse-animate {
-    animation: tile-pulse 0.7s ease-out both;
+  .hub-ripple-loop,
+  .tile-pulse-loop {
+    animation-duration: 4.8s;
+    animation-iteration-count: infinite;
+    animation-timing-function: ease-out;
+  }
+
+  .hub-ripple-loop {
+    animation-name: hub-ripple-loop;
+  }
+  .tile-pulse-loop {
+    animation-name: tile-pulse-loop;
     animation-delay: var(--pulse-delay, 0s);
   }
 }
 
-@keyframes tile-pulse {
-  0% {
-    border-color: var(--border);
+@keyframes hub-ripple-loop {
+  0%,
+  4%,
+  100% {
+    box-shadow: 0 0 0 0 transparent;
   }
-  35% {
-    border-color: var(--brand);
+  2% {
+    box-shadow: 0 0 0 8px color-mix(in oklab, var(--foreground) 14%, transparent);
   }
+}
+
+@keyframes tile-pulse-loop {
+  0%,
+  6%,
   100% {
     border-color: var(--border);
+  }
+  3% {
+    border-color: var(--brand);
   }
 }
 
