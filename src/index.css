@@ -217,38 +217,155 @@
   transform: translate(-50%, -50%) rotate(45deg);
 }
 
-/* Model Council diagram: draws in once, then holds — a "Replay" button restarts it. */
+/* Hero Model Council diagram: continuous loop (see hero-constellation.tsx).
+   One shared 4.8s cycle, delay 0 on every rule — each keyframe's own percentage
+   stops encode its place directly on that shared timeline (rather than using
+   animation-delay per element), so every element's "hidden/reset" window lands
+   on the same real-time instant without needing to reason about phase-shift
+   math. Order: stage1 (you->models) draws, stage2 (models->chair) converges,
+   stage3 (chair->answer) draws, the answer pops in as the payoff, everything
+   holds, then retracts together and loops. Guarded by the same media query as
+   every other looping animation on the page. */
 @media (prefers-reduced-motion: no-preference) {
-  .council-node-animate {
-    transform-box: fill-box;
-    transform-origin: center;
-    animation: council-node-in 0.5s ease-out both;
+  .hero-flow-stage1,
+  .hero-flow-stage2,
+  .hero-flow-stage3,
+  .hero-node-pulse-you,
+  .hero-node-pulse-model,
+  .hero-node-pulse-chair,
+  .hero-answer-pop {
+    animation-duration: 4.8s;
+    animation-iteration-count: infinite;
+    animation-timing-function: linear;
   }
 
-  .council-line-animate {
-    animation: council-line-draw 0.6s ease-out both;
+  .hero-flow-stage1 {
+    animation-name: hero-flow-stage1;
+  }
+  .hero-flow-stage2 {
+    animation-name: hero-flow-stage2;
+  }
+  .hero-flow-stage3 {
+    animation-name: hero-flow-stage3;
+  }
+  .hero-node-pulse-you {
+    animation-name: hero-node-pulse-you;
+  }
+  .hero-node-pulse-model {
+    animation-name: hero-node-pulse-model;
+  }
+  .hero-node-pulse-chair {
+    animation-name: hero-node-pulse-chair;
+  }
+  .hero-answer-pop {
+    transform-box: fill-box;
+    animation-name: hero-answer-pop;
   }
 }
 
-@keyframes council-node-in {
-  from {
-    opacity: 0;
-    scale: 0.85;
+@keyframes hero-flow-stage1 {
+  0%,
+  90%,
+  100% {
+    stroke-dashoffset: 340;
   }
-  to {
+  14% {
+    stroke-dashoffset: 0;
+  }
+  84% {
+    stroke-dashoffset: 0;
+  }
+}
+
+@keyframes hero-flow-stage2 {
+  0%,
+  14%,
+  90%,
+  100% {
+    stroke-dashoffset: 340;
+  }
+  27.5% {
+    stroke-dashoffset: 0;
+  }
+  84% {
+    stroke-dashoffset: 0;
+  }
+}
+
+@keyframes hero-flow-stage3 {
+  0%,
+  28%,
+  90%,
+  100% {
+    stroke-dashoffset: 110;
+  }
+  38% {
+    stroke-dashoffset: 0;
+  }
+  84% {
+    stroke-dashoffset: 0;
+  }
+}
+
+/* Node "lit" flashes: fill briefly brightens as the flow arrives, then settles
+   back to its resting color — the nodes themselves never disappear. */
+@keyframes hero-node-pulse-you {
+  0%,
+  8%,
+  100% {
+    fill: var(--foreground);
+  }
+  3% {
+    fill: var(--muted-foreground);
+  }
+}
+
+@keyframes hero-node-pulse-model {
+  0%,
+  12%,
+  100% {
+    fill: var(--background);
+  }
+  16% {
+    fill: var(--foreground);
+  }
+  22% {
+    fill: var(--background);
+  }
+}
+
+@keyframes hero-node-pulse-chair {
+  0%,
+  26%,
+  100% {
+    fill: var(--muted-foreground);
+  }
+  30% {
+    fill: var(--foreground);
+  }
+  36% {
+    fill: var(--muted-foreground);
+  }
+}
+
+/* The payoff: doesn't exist until it's earned, appears with a small overshoot
+   "pop", holds, then fades out with the rest of the diagram at reset. */
+@keyframes hero-answer-pop {
+  0%,
+  38%,
+  96%,
+  100% {
+    opacity: 0;
+    scale: 0.5;
+  }
+  42% {
+    opacity: 1;
+    scale: 1.15;
+  }
+  46%,
+  90% {
     opacity: 1;
     scale: 1;
-  }
-}
-
-@keyframes council-line-draw {
-  from {
-    stroke-dashoffset: var(--dash-length, 160);
-    opacity: 0;
-  }
-  to {
-    stroke-dashoffset: 0;
-    opacity: 1;
   }
 }
 
