@@ -17,8 +17,9 @@ import { cn } from "@/lib/utils"
 // Looping animation: pure CSS keyframes (see index.css's council-diagram-* /
 // council-diagram-pulse-* / council-diagram-answer-pop rules), not
 // framer-motion — an infinite loop is cheaper driven by the compositor than
-// re-running JS-driven motion forever, and it matches deep-research-diagram.tsx
-// / agent-diagram.tsx's existing CSS-loop convention. you/models/chair stay
+// re-running JS-driven motion forever, and it matches deep-research-diagram.tsx's
+// existing CSS-loop convention (Agent's visual is a terminal/log panel now,
+// not a node graph -- see agent-terminal.tsx). you/models/chair stay
 // permanently visible (the structure); only the connector lines, a brief
 // "lit" fill-flash on each node as the flow arrives, and the answer node
 // itself (which only exists once earned each cycle) actually animate.

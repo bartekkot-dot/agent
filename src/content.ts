@@ -248,11 +248,19 @@ export const content = {
       "For everyday tasks, one agent reasons through your request and calls the tools " +
       "it needs — reading files, running commands — looping as many times as it takes, " +
       "so you always see what it did before it answers.",
-    diagram: {
-      you: "you",
-      agent: "agent",
-      answer: "answer",
-      captions: ["you ask", "reasons & uses tools — on repeat", "one answer"],
+    // Renders as a small terminal/log panel (see agent-terminal.tsx), not a
+    // node graph -- calling tools in sequence isn't a fan-out or a loop
+    // between peer stages, so it shouldn't share Council's or Research's
+    // visual language. Mirrors the real app's own tool-call rendering
+    // (wrench icon, tool name, status) from AgentView.tsx, just in miniature.
+    terminal: {
+      steps: [
+        { tool: "read", title: "package.json", status: "done" },
+        { tool: "bash", title: "npm test", status: "running" },
+        { tool: "edit", title: "src/index.ts", status: "pending" },
+      ],
+      answer: "one answer, once every tool call resolves",
+      captions: ["you ask", "reasons & calls tools — in sequence", "one answer"],
     },
   },
 
