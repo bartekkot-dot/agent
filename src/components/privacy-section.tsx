@@ -2,37 +2,35 @@ import { Container } from "@/components/container"
 import { Reveal } from "@/components/reveal"
 import { content } from "@/content"
 
-// Same typographic treatment as value-section.tsx (no card, no numbering —
-// see that file's comment), mirrored into an asymmetric split instead of a
-// single column so the two sections don't read as the same layout reused.
-//
-// lg:items-center, not lg:items-start: the headline block (a heading + one
-// sentence) is much shorter than the four-item point list beside it.
-// Top-aligning left all of that slack as one large gap below the headline;
-// centering distributes it evenly above and below instead, so neither side
-// reads as an unfinished void.
+// Same structure as value-section.tsx (no card, no numbering, same point-grid
+// and left-border-accent treatment — see that file's comment for the shared
+// rationale). The asymmetric split this used to be (points left, headline
+// right, vertically centered) left the short headline column with a large
+// empty band above and below it once centered. Stacking headline-then-grid,
+// same as Value, uses the full width for the points instead of forcing them
+// to fill a column matched to the headline's height.
 export function PrivacySection() {
   return (
     <section id="privacy" className="relative scroll-mt-12 overflow-hidden border-t border-border/40 py-20 sm:py-28">
       <div aria-hidden="true" className="ledger-grid pointer-events-none absolute inset-0" />
 
       <Reveal>
-        <Container className="relative grid grid-cols-1 gap-10 lg:grid-cols-[1fr_0.85fr] lg:items-center lg:gap-16">
-          <dl className="order-2 divide-y divide-border border-t border-border lg:order-1">
-            {content.privacy.points.map((point) => (
-              <div key={point.title} className="py-5">
-                <dt className="text-sm font-medium text-foreground">{point.title}</dt>
-                <dd className="mt-1 text-sm text-body">{point.body}</dd>
-              </div>
-            ))}
-          </dl>
-
-          <div className="order-1 lg:order-2">
-            <h2 className="font-heading text-4xl font-semibold tracking-tight text-foreground sm:text-5xl">
+        <Container className="relative">
+          <div className="max-w-2xl">
+            <h2 className="font-heading text-4xl font-semibold tracking-tight text-foreground sm:text-5xl sm:tracking-tighter">
               {content.privacy.headline}
             </h2>
             <p className="mt-5 text-lg text-subhead">{content.privacy.sub}</p>
           </div>
+
+          <dl className="mt-10 grid grid-cols-1 gap-x-12 gap-y-8 border-t border-border pt-10 sm:grid-cols-2">
+            {content.privacy.points.map((point) => (
+              <div key={point.title} className="border-l border-foreground/15 pl-5">
+                <dt className="text-base font-semibold tracking-tight text-foreground">{point.title}</dt>
+                <dd className="mt-1.5 text-sm text-body">{point.body}</dd>
+              </div>
+            ))}
+          </dl>
         </Container>
       </Reveal>
     </section>

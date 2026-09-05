@@ -14,7 +14,7 @@ export function PillarsSection() {
           <div className="grid grid-cols-1 gap-8 sm:grid-cols-3 sm:gap-10">
             {content.pillars.map((pillar) => (
               <div key={pillar.title}>
-                <h3 className="text-lg font-medium text-foreground">{pillar.title}</h3>
+                <h3 className="text-base font-semibold tracking-tight text-foreground">{pillar.title}</h3>
                 <p className="mt-2 text-sm text-body">{pillar.body}</p>
               </div>
             ))}

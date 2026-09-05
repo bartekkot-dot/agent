@@ -1,13 +1,15 @@
 import { Container } from "@/components/container"
 import { Reveal } from "@/components/reveal"
 import { content } from "@/content"
-import { cn } from "@/lib/utils"
 
 // Typographic, not a card grid — these are parallel benefits, not a sequence
 // or a comparable set of discrete units, so no numbering and no card border
-// (see privacy-section.tsx for the sibling treatment of the same idea). The
-// list itself runs two columns wide on larger screens (still just dividers,
-// not cards) so it uses the section's full width instead of leaving it empty.
+// (see privacy-section.tsx for the sibling treatment of the same idea, which
+// shares this exact point-grid + left-border-accent markup). The list itself
+// runs two columns wide on larger screens so it uses the section's full width
+// instead of leaving it empty. Each item gets an identical 1px left-border
+// accent (foreground/15, not a new color) instead of a per-item icon — one
+// consistent marker that signals "distinct point" without illustrating.
 export function ValueSection() {
   return (
     <section id="value" className="relative scroll-mt-12 overflow-hidden border-t border-border/40 py-20 sm:py-24">
@@ -22,7 +24,7 @@ export function ValueSection() {
               tailwind-merge, re-centering the whole block and breaking the
               shared spine). */}
           <div className="max-w-2xl">
-            <h2 className="font-heading text-3xl font-semibold tracking-tight text-foreground sm:text-4xl">
+            <h2 className="font-heading text-4xl font-semibold tracking-tight text-foreground sm:text-5xl sm:tracking-tighter">
               {content.value.heading}
             </h2>
             <p className="mt-4 max-w-xl text-lg text-subhead">{content.value.lead}</p>
@@ -34,27 +36,15 @@ export function ValueSection() {
               columns uses that width for real content (each item stays a
               comfortable reading measure) rather than stretching one column
               wide or adding a decorative visual that wouldn't carry
-              information. Per-item top border instead of divide-y, since
-              divide-y's border only makes sense between vertically stacked
-              siblings -- in a 2-column grid the "next" DOM sibling can be the
-              item beside it, not below it. */}
-          <dl className="mt-10 grid grid-cols-1 gap-x-12 border-t border-border sm:grid-cols-2">
-            {content.value.points.map((point, i) => (
-              <div
-                key={point.title}
-                className={cn(
-                  "border-border py-5",
-                  // Mobile: every item but the first needs its own top
-                  // border (they stack, like the old divide-y). Desktop:
-                  // item 1 sits beside item 0 in row one instead of below
-                  // it, so its border is cancelled there; items 2+ start
-                  // row two and keep theirs on both layouts.
-                  i > 0 && "border-t",
-                  i === 1 && "sm:border-t-0"
-                )}
-              >
-                <dt className="text-base font-medium text-foreground">{point.title}</dt>
-                <dd className="mt-1 text-sm text-body">{point.body}</dd>
+              information. gap-y (not border-t) separates rows now that each
+              item carries its own left-border accent -- a top border and a
+              left border meeting at a corner would start to read as a card
+              outline, which this deliberately isn't. */}
+          <dl className="mt-8 grid grid-cols-1 gap-x-12 gap-y-8 border-t border-border pt-6 sm:grid-cols-2">
+            {content.value.points.map((point) => (
+              <div key={point.title} className="border-l border-foreground/15 pl-5">
+                <dt className="text-base font-semibold tracking-tight text-foreground">{point.title}</dt>
+                <dd className="mt-1.5 text-sm text-body">{point.body}</dd>
               </div>
             ))}
           </dl>

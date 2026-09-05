@@ -28,7 +28,7 @@ export function ModelsSection() {
         <Reveal>
           <div className="grid grid-cols-1 items-center gap-12 lg:grid-cols-[0.9fr_1fr] lg:gap-16">
             <div>
-              <h2 className="font-heading text-4xl font-semibold tracking-tight sm:text-5xl">
+              <h2 className="font-heading text-4xl font-semibold tracking-tight sm:text-5xl sm:tracking-tighter">
                 {content.models.headline.map((segment) => (
                   <span
                     key={segment.text}
@@ -57,7 +57,12 @@ export function ModelsSection() {
                   key={provider.name}
                   className={cn(
                     "flex flex-col items-center justify-center gap-1 rounded-xl border border-border/60 px-3 py-5 text-center",
-                    hasPlayed && "tile-pulse-loop"
+                    hasPlayed && "tile-pulse-loop",
+                    // Odd provider count leaves the last tile alone on its row —
+                    // span it full width instead of stranding it beside a gap.
+                    content.models.providers.length % 2 !== 0 &&
+                      i === content.models.providers.length - 1 &&
+                      "col-span-2"
                   )}
                   style={{ "--pulse-delay": `${0.4 + i * 0.08}s` } as CSSProperties}
                 >

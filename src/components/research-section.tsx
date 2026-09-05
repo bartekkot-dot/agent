@@ -43,7 +43,7 @@ export function ResearchSection() {
           <div className="grid grid-cols-1 gap-12 sm:grid-cols-2 sm:items-center sm:gap-16">
             <div>
               <p className="text-sm text-muted-foreground">{content.research.connective}</p>
-              <h2 className="font-heading mt-3 text-4xl font-semibold tracking-tight sm:text-5xl">
+              <h2 className="font-heading mt-3 text-4xl font-semibold tracking-tight sm:text-5xl sm:tracking-tighter">
                 {content.research.headline.map((segment) => (
                   <span
                     key={segment.text}
