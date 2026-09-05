@@ -34,11 +34,18 @@ export const content = {
   // ── App preview strip (real product screenshots, right after the hero) ──
   // width/height are each screenshot's real pixel size, used to size the
   // slider cards to their native aspect ratio (no cropping, no distortion).
+  // Regenerated at a shared 1280x816 viewport, 2x DPR, dark mode -- same
+  // fixed frame for every shot, so cards sit uniformly in the slider instead
+  // of each having its own odd aspect ratio. The chat/research shots are
+  // seeded (not manually typed) with the exact monorepo-debate scenario from
+  // councilDemo/research.citation below, so the screenshots match the page's
+  // own narrative rather than generic placeholder content.
   appPreview: {
     shots: [
-      { src: "screenshots/app-chat.png", alt: `${APP_NAME} chat view with the model prompt bar`, width: 1270, height: 798 },
-      { src: "screenshots/app-settings-skills.png", alt: `${APP_NAME} settings, Skills tab`, width: 1270, height: 906 },
-      { src: "screenshots/app-settings-general.png", alt: `${APP_NAME} settings, General tab`, width: 1282, height: 798 },
+      { src: "screenshots/app-chat.png", alt: `${APP_NAME} Model Council answering "monorepo or polyrepo?" with a synthesized answer and each model's individual response`, width: 2560, height: 1632 },
+      { src: "screenshots/app-research.png", alt: `${APP_NAME} Deep Research answering the Turborepo vs Nx follow-up with cited sources`, width: 2560, height: 1632 },
+      { src: "screenshots/app-settings-general.png", alt: `${APP_NAME} settings, General tab`, width: 2560, height: 1632 },
+      { src: "screenshots/app-settings-skills.png", alt: `${APP_NAME} Skills library`, width: 2560, height: 1632 },
     ],
   },
 
