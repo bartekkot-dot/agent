@@ -63,12 +63,17 @@ export function CouncilDiagram() {
   return (
     <div className="relative w-full max-w-[620px]">
       <svg viewBox="0 0 640 440" className="w-full text-border" aria-hidden="true">
-        {/* you -> models (fan out) */}
+        {/* you -> models (fan out). Lines use a dedicated --diagram-line token
+            rather than currentColor/--border — --border is real-border weight
+            (dividers, card edges) and reads as nearly invisible white-on-near-
+            black in dark mode; this is tuned per-theme so the flow is legible
+            without shouting (see --diagram-line in index.css). Node outlines
+            below intentionally keep currentColor/--border, unchanged. */}
         {MODELS.map((m) => (
           <path
             key={`in-${m.id}`}
             d={bezier(YOU, m)}
-            stroke="currentColor"
+            stroke="var(--diagram-line)"
             strokeWidth="1.5"
             fill="none"
             strokeDasharray={reducedMotion ? undefined : FAN_DASH}
@@ -80,7 +85,7 @@ export function CouncilDiagram() {
           <path
             key={`out-${m.id}`}
             d={bezier(m, CHAIR)}
-            stroke="currentColor"
+            stroke="var(--diagram-line)"
             strokeWidth="1.5"
             fill="none"
             strokeDasharray={reducedMotion ? undefined : FAN_DASH}
@@ -91,7 +96,7 @@ export function CouncilDiagram() {
             terminal node itself carries color, per the single-payoff-role rule */}
         <path
           d={`M ${CHAIR.x + 16} ${CHAIR.y} L ${ANSWER.x - 16} ${ANSWER.y}`}
-          stroke="currentColor"
+          stroke="var(--diagram-line)"
           strokeWidth="1.5"
           fill="none"
           strokeDasharray={reducedMotion ? undefined : PAYOFF_DASH}

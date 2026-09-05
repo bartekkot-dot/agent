@@ -44,6 +44,7 @@
   --color-brand-foreground: var(--brand-foreground);
   --color-subhead: var(--subhead);
   --color-body: var(--body);
+  --color-diagram-line: var(--diagram-line);
   --radius-sm: calc(var(--radius) * 0.6);
   --radius-md: calc(var(--radius) * 0.8);
   --radius-lg: var(--radius);
@@ -111,6 +112,13 @@
      copy. Ratios verified against #ffffff: subhead 13.4:1, body 9.0:1 (WCAG AAA). */
   --subhead: #2b3126;
   --body: #454b41;
+
+  /* Flow-diagram connector lines (Model Council: you -> models -> chair ->
+     answer) — was riding on --border (0.08 alpha), which is a real-border
+     weight, too faint for a line meant to be read as the shape of a process.
+     A dedicated token so this stays independent of --border used everywhere
+     else (dividers, card edges). */
+  --diagram-line: rgba(16, 21, 18, 0.28);
 }
 
 .dark {
@@ -162,6 +170,11 @@
      AA on every tier, incl. muted (4.81:1). */
   --subhead: #dde2d6;
   --body: #b7bdae;
+
+  /* White-on-near-black needs a much bigger jump than the light-mode value to
+     read the same — 0.28 alpha here would still be nearly invisible against
+     #0a0b0a, so this bump is deliberately larger than light mode's. */
+  --diagram-line: rgba(241, 244, 238, 0.45);
 }
 
 @media (prefers-reduced-motion: no-preference) {
