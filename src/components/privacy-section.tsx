@@ -5,13 +5,19 @@ import { content } from "@/content"
 // Same typographic treatment as value-section.tsx (no card, no numbering —
 // see that file's comment), mirrored into an asymmetric split instead of a
 // single column so the two sections don't read as the same layout reused.
+//
+// lg:items-center, not lg:items-start: the headline block (a heading + one
+// sentence) is much shorter than the four-item point list beside it.
+// Top-aligning left all of that slack as one large gap below the headline;
+// centering distributes it evenly above and below instead, so neither side
+// reads as an unfinished void.
 export function PrivacySection() {
   return (
     <section id="privacy" className="relative scroll-mt-12 overflow-hidden border-t border-border/40 py-20 sm:py-28">
       <div aria-hidden="true" className="ledger-grid pointer-events-none absolute inset-0" />
 
       <Reveal>
-        <Container className="relative grid grid-cols-1 gap-10 lg:grid-cols-[1fr_0.85fr] lg:items-start lg:gap-16">
+        <Container className="relative grid grid-cols-1 gap-10 lg:grid-cols-[1fr_0.85fr] lg:items-center lg:gap-16">
           <dl className="order-2 divide-y divide-border border-t border-border lg:order-1">
             {content.privacy.points.map((point) => (
               <div key={point.title} className="py-5">

@@ -63,14 +63,19 @@ export function ResearchSection() {
             />
           </div>
 
-          {/* items-start, not items-center: the diagram is much shorter than
-              the citation card, and centering it against the card's height
-              left a large dead gap above it (same class of bug already fixed
-              on the Council video and the app-preview slider). Top-aligning
-              flush with the card's own top edge removes that gap. */}
-          <div className="mt-16 grid grid-cols-1 gap-12 sm:grid-cols-2 sm:items-start sm:gap-16">
+          {/* No sm:items-start/center override here -- default grid stretch
+              makes both columns match the row's height (the citation card's,
+              since it's the taller one), then the diagram's own wrapper
+              centers it within that full height. Simply top-aligning (the
+              previous fix) removed the gap ABOVE the diagram but left just as
+              much dead space below it, since the diagram was still much
+              shorter than the card -- deep-research-diagram.tsx's viewBox is
+              now taller too, so the remaining centered gap is small, not a void. */}
+          <div className="mt-16 grid grid-cols-1 gap-12 sm:grid-cols-2 sm:gap-16">
             <ResearchCitation />
-            <DeepResearchDiagram />
+            <div className="flex items-center justify-center">
+              <DeepResearchDiagram />
+            </div>
           </div>
         </Reveal>
       </Container>

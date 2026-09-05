@@ -20,12 +20,20 @@ import { cn } from "@/lib/utils"
 // ring itself is permanent structure once lit (like Council's node outlines),
 // not drawn in; only the connector lines, the orbiting dot, node fill-flashes,
 // and the answer node animate.
-const PLAN = { x: 50, y: 110 }
-const RING = { cx: 320, cy: 110, r: 46 }
-const SEARCH = { x: 290, y: 110 }
-const READ = { x: 350, y: 110 }
-const COMPILE = { x: 474, y: 110 }
-const ANSWER = { x: 576, y: 110 }
+// Taller viewBox than the other two diagrams (390 vs ~200-220) on purpose:
+// the citation card beside this one runs long (a question, three sources,
+// a verdict), and a diagram left at the same flat aspect ratio as Council's
+// or Agent's just floats small at the top with a dead gap below it. The
+// extra height is pure breathing room around the same horizontal flow, not
+// bigger nodes -- combined with vertical centering in research-section.tsx,
+// it makes the diagram's footprint match the card's instead of leaving a void.
+const Y = 195
+const PLAN = { x: 50, y: Y }
+const RING = { cx: 320, cy: Y, r: 46 }
+const SEARCH = { x: 290, y: Y }
+const READ = { x: 350, y: Y }
+const COMPILE = { x: 474, y: Y }
+const ANSWER = { x: 576, y: Y }
 const NODE_R = 14
 
 function useReducedMotion() {
@@ -55,8 +63,8 @@ export function DeepResearchDiagram() {
   const [planLabel, searchLabel, readLabel, compileLabel, answerLabel] = content.research.steps
 
   return (
-    <div ref={ref} className="mt-6 w-full max-w-[560px]">
-      <svg viewBox="0 0 640 220" aria-hidden="true" className="w-full">
+    <div ref={ref} className="w-full max-w-[560px]">
+      <svg viewBox="0 0 640 390" aria-hidden="true" className="w-full">
         {/* plan -> ring */}
         <line
           x1={PLAN.x + NODE_R} y1={PLAN.y} x2={RING.cx - RING.r} y2={RING.cy}
@@ -71,7 +79,7 @@ export function DeepResearchDiagram() {
           <circle r="4" fill="var(--foreground)" className="research-loop-orbit-dot" />
         )}
 
-        <text x={RING.cx} y="52" textAnchor="middle" fontSize="10" fill="var(--muted-foreground)">
+        <text x={RING.cx} y={RING.cy - RING.r - 12} textAnchor="middle" fontSize="10" fill="var(--muted-foreground)">
           {content.research.loopLabel}
         </text>
 
@@ -156,13 +164,13 @@ export function DeepResearchDiagram() {
         </g>
 
         {/* plain-word stage captions under the three visual clusters */}
-        <text x={PLAN.x} y="195" textAnchor="middle" fontSize="11" fill="var(--muted-foreground)">
+        <text x={PLAN.x} y="365" textAnchor="middle" fontSize="11" fill="var(--muted-foreground)">
           {content.research.flowCaptions[0]}
         </text>
-        <text x={RING.cx} y="195" textAnchor="middle" fontSize="11" fill="var(--muted-foreground)">
+        <text x={RING.cx} y="365" textAnchor="middle" fontSize="11" fill="var(--muted-foreground)">
           {content.research.flowCaptions[1]}
         </text>
-        <text x={(COMPILE.x + ANSWER.x) / 2} y="195" textAnchor="middle" fontSize="11" fill="var(--muted-foreground)">
+        <text x={(COMPILE.x + ANSWER.x) / 2} y="365" textAnchor="middle" fontSize="11" fill="var(--muted-foreground)">
           {content.research.flowCaptions[2]}
         </text>
       </svg>

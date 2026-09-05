@@ -451,7 +451,7 @@
   }
 
   .research-loop-orbit-dot {
-    offset-path: circle(46px at 320px 110px);
+    offset-path: circle(46px at 320px 195px);
     animation-name: research-loop-orbit-dot;
   }
   .research-loop-breakout {
