@@ -11,20 +11,27 @@ export function ValueSection() {
       <div aria-hidden="true" className="ledger-grid pointer-events-none absolute inset-0" />
 
       <Reveal>
-        <Container className="relative max-w-2xl">
-          <h2 className="font-heading text-3xl font-semibold tracking-tight text-foreground sm:text-4xl">
-            {content.value.heading}
-          </h2>
-          <p className="mt-4 max-w-xl text-lg text-subhead">{content.value.lead}</p>
+        <Container className="relative">
+          {/* Container's own max-w-[1100px] must stay intact so this section's
+              left edge matches every other section's -- the text measure is
+              narrowed on this inner wrapper instead, not on Container itself
+              (that previously replaced max-w-[1100px] via tailwind-merge,
+              re-centering the whole block and breaking the shared spine). */}
+          <div className="max-w-2xl">
+            <h2 className="font-heading text-3xl font-semibold tracking-tight text-foreground sm:text-4xl">
+              {content.value.heading}
+            </h2>
+            <p className="mt-4 max-w-xl text-lg text-subhead">{content.value.lead}</p>
 
-          <dl className="mt-10 divide-y divide-border border-t border-border">
-            {content.value.points.map((point) => (
-              <div key={point.title} className="py-5">
-                <dt className="text-base font-medium text-foreground">{point.title}</dt>
-                <dd className="mt-1 text-sm text-body">{point.body}</dd>
-              </div>
-            ))}
-          </dl>
+            <dl className="mt-10 divide-y divide-border border-t border-border">
+              {content.value.points.map((point) => (
+                <div key={point.title} className="py-5">
+                  <dt className="text-base font-medium text-foreground">{point.title}</dt>
+                  <dd className="mt-1 text-sm text-body">{point.body}</dd>
+                </div>
+              ))}
+            </dl>
+          </div>
         </Container>
       </Reveal>
     </section>

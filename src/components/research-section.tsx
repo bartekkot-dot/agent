@@ -63,7 +63,12 @@ export function ResearchSection() {
             />
           </div>
 
-          <div className="mt-16 grid grid-cols-1 gap-12 sm:grid-cols-2 sm:items-center sm:gap-16">
+          {/* items-start, not items-center: the diagram is much shorter than
+              the citation card, and centering it against the card's height
+              left a large dead gap above it (same class of bug already fixed
+              on the Council video and the app-preview slider). Top-aligning
+              flush with the card's own top edge removes that gap. */}
+          <div className="mt-16 grid grid-cols-1 gap-12 sm:grid-cols-2 sm:items-start sm:gap-16">
             <ResearchCitation />
             <DeepResearchDiagram />
           </div>
